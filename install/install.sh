@@ -65,6 +65,11 @@ echo NOTE: if you want to use RT-11 VT graphics, then:
 echo make sure to run 'sudo raspi-config', and enable X11 instead of Wayland.
 echo ...details: in raspi-config, choose Advanced Options->Wayland->X11, then Finish to reboot
 echo
+echo Alternatively, RT-11 graphics under Wayland require you to restart the PDP-11
+echo simulator manually with pidp11.sh in the pidp11 bin directory
+echo
+echo In a hurry? Leave this for later, not critical.
+echo
 echo
 new_config_line="xhost +"
 config_file="/etc/xdg/lxsession/LXDE-pi/autostart"
