@@ -134,7 +134,7 @@ done
 
 while true; do
     echo
-    read -p "Add VT-52 desktop icon? " prxn
+    read -p "Add VT-52 desktop icon and desktop settings? " prxn
     case $prxn in
         [Yy]* ) 
 	    cp /opt/pidp11/install/vt52.desktop /home/pi/Desktop/
@@ -151,7 +151,23 @@ while true; do
                 # Add the setting if it doesn't exist
                 echo -e "[config]\nquick_exec=1" >> "$config_file"
             fi
-            echo "Desktop updated."
+	    
+	    # wallpaper
+	    #sudo -u pi dbus-launch pcmanfm --set-wallpaper /opt/pidp11/install/wallpaper.jpeg --wallpaper-mode=fit
+            config_file="/home/pi/.config/pcmanfm/LXDE-pi/desktop-items-HDMI-A-1.conf"
+            # Create the directory if it doesn't exist
+            mkdir -p "$(dirname "$config_file")"
+            # Add or update the execution policy setting
+            if grep -q "^\s*wallpaper=" "$config_file" 2>/dev/null; then
+                # Update existing setting
+                sed -i 's/^\s*wallpaper=.*/wallpaper=\/opt\/pidp11\/install\/wallpaper.jpeg/' "$config_file"
+            else
+                # Add the setting if it doesn't exist
+                echo -e "[config]\ndesktop-items-HDMI-A-1.conf" >> "$config_file"
+            fi
+            
+	    
+	    echo "Desktop updated."
 	    break;;
 
 	[Nn]* ) 
@@ -160,5 +176,5 @@ while true; do
         * ) echo "Please answer Y or N.";;
     esac
 done
-echo $prxn - Done.
+echo $prxn - Done. Please do a sudo reboot
 
