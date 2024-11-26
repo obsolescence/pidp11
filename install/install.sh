@@ -6,7 +6,6 @@
 #
 PATH=/usr/sbin:/usr/bin:/sbin:/bin
 
-
 apt-get update
 #Install SDL2, optionally used for PDP-11 graphics terminal emulation
 apt-get install libsdl2-dev
@@ -34,12 +33,14 @@ while true; do
             sudo cp $pidpath/bin/$subdir/pdp11_realcons $pidpath/src/02.3_simh/4.x+realcons/bin-rpi/pdp11_realcons
             sudo cp $pidpath/bin/$subdir/scansw $pidpath/src/11_pidp_server/scanswitch/scansw
             sudo cp $pidpath/bin/$subdir/pidp1170_blinkenlightd $pidpath/src/11_pidp_server/pidp11/bin-rpi/pidp1170_blinkenlightd
+            sudo cp $pidpath/bin/$subdir/vt52 $pidpath/bin/
             break;;
         [6]* ) 
             subdir=backup64bit-binaries
             sudo cp $pidpath/bin/$subdir/pdp11_realcons $pidpath/src/02.3_simh/4.x+realcons/bin-rpi/pdp11_realcons
             sudo cp $pidpath/bin/$subdir/scansw $pidpath/src/11_pidp_server/scanswitch/scansw
             sudo cp $pidpath/bin/$subdir/pidp1170_blinkenlightd $pidpath/src/11_pidp_server/pidp11/bin-rpi/pidp1170_blinkenlightd
+            sudo cp $pidpath/bin/$subdir/vt52 $pidpath/bin/
             break;;
         [Cc]* ) 
             sudo rm $pidpath/src/02.3_simh/4.x+realcons/bin-rpi/pdp11_realcons
@@ -117,6 +118,37 @@ while true; do
 	    break;;
         [Nn]* ) 
 	    echo operating systems not added at your request. You can do it later.
+            break;;
+        * ) echo "Please answer Y or N.";;
+    esac
+done
+
+# 20241126 Add VT52 desktop icon
+# =============================================================================
+
+while true; do
+    read -p "Add VT-52 desktop icon? " prxn
+    case $prxn in
+        [Yy]* ) 
+	    cp /opt/pidp11/install/vt52.desktop /home/pi/Desktop/
+
+	    #make pcmanf run on double click, change its config file
+            config_file="/home/pi/.config/libfm/libfm.conf"
+            # Create the directory if it doesn't exist
+            #mkdir -p "$(dirname "$config_file")"
+            # Add or update the execution policy setting
+            if grep -q "^\s*quick_exec=" "$config_file" 2>/dev/null; then
+                # Update existing setting
+                sed -i 's/^\s*quick_exec=.*/quick_exec=1/' "$config_file"
+            else
+                # Add the setting if it doesn't exist
+                echo -e "[config]\nquick_exec=1" >> "$config_file"
+            fi
+            echo "Desktop updated."
+	    break;;
+
+	[Nn]* ) 
+	    echo Skipped. You can do it later by re-running this install script.
             break;;
         * ) echo "Please answer Y or N.";;
     esac
