@@ -24,7 +24,7 @@ apt-get install libtirpc-dev
 pidpath=/opt/pidp11
 
 while true; do
-
+    echo
     read -p "Install precompiled (3)2 bit, precompiled (6)4 bit binaries or (C)ompile from source? " prxn
     case $prxn in
         [3]* ) 
@@ -108,11 +108,12 @@ fi
 # =============================================================================
 
 while true; do
+    echo
     read -p "Download and install operating systems? " prxn
     case $prxn in
         [Yy]* ) 
 	    cd /opt/pidp11
-            sudo wget -O http://pidp.net/pidp11/systems.tar.gz
+            sudo wget -O /opt/pidp11/systems.tar.gz http://pidp.net/pidp11/systems.tar.gz
             sudo gzip -d systems.tar.gz
             sudo tar -xvf systems.tar
 	    break;;
@@ -127,6 +128,7 @@ done
 # =============================================================================
 
 while true; do
+    echo
     read -p "Add VT-52 desktop icon? " prxn
     case $prxn in
         [Yy]* ) 
@@ -135,7 +137,7 @@ while true; do
 	    #make pcmanf run on double click, change its config file
             config_file="/home/pi/.config/libfm/libfm.conf"
             # Create the directory if it doesn't exist
-            #mkdir -p "$(dirname "$config_file")"
+            mkdir -p "$(dirname "$config_file")"
             # Add or update the execution policy setting
             if grep -q "^\s*quick_exec=" "$config_file" 2>/dev/null; then
                 # Update existing setting
