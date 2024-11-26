@@ -12,9 +12,9 @@ Credits: The core components in the PiDP-11 project are the simH simulator (http
 
 # Install instructions
 
-  cd /opt
-  sudo git clone https://github.com/obsolescence/pidp11.git
-  sudo /opt/pidp11/install/install.sh
+    cd /opt
+    sudo git clone https://github.com/obsolescence/pidp11.git
+    sudo /opt/pidp11/install/install.sh
 
 Note that you do not necessarily need to have the PiDP-11 hardware. This will run on any Pi, but you have to tell it which OS you want to boot from the command ine rather than from the front panel. See the manual for a how-to: https://obsolescence.dev/pidp11/PiDP-11_Manual.pdf
 
