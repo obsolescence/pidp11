@@ -1,0 +1,96 @@
+#! /bin/sh
+
+### BEGIN INIT INFO
+# Provides:		pidp11
+# Required-Start:	$syslog
+# Required-Stop:	$syslog
+# Default-Start:	2 3 4 5
+# Default-Stop:		0 1 6
+# Short-Description:	PiDP-11 emulator
+### END INIT INFO
+
+# Init script for pidp11.  
+# Snippets taken from original author: Mark G Thomas <mark@misty.com> 2015-05-09
+
+PATH=/sbin:/usr/sbin:/bin:/usr/bin
+umask 022
+. /lib/lsb/init-functions
+
+
+# Assuming pidp is in /opt/pidp11
+#
+pidp11="/opt/pidp11/bin/pidp11.sh"
+#scanswitch="/opt/pidp11/bin/scanswitch"
+
+pidp_dir=`dirname $pidp11`
+pidp_bin=`basename $pidp11`
+
+# Requires screen utility for detached pidp11 console functionality.
+#
+test -x /usr/bin/screen || ( echo "screen not found" && exit 0 )
+#test -x $scanswitch || ( echo "scanswitch not found" && exit 0 )
+test -x $pidp11 || ( echo "pidp11 not found" && exit 0 )
+
+# Check if pidp11 is already runnning under screen.
+#
+is_running() {
+	procs=`screen -ls pidp11 | egrep '[0-9]+\.pidp11' | wc -l`
+	return $procs
+}
+
+do_start() {
+	is_running
+	if [ $? -gt 0 ]; then
+	    echo "PiDP-11 is already running, not starting again." >&2
+	    exit 0
+	fi
+
+	log_daemon_msg "Starting PiDP-11" "pidp11"
+	cd $pidp_dir
+	echo
+	echo
+	echo screen -dmS pidp11 ./$pidp_bin
+	screen -dmS pidp11 ./$pidp_bin
+	status=$?
+	log_end_msg $status
+	return $status
+}
+
+do_stop() {
+	is_running
+	if [ $? -eq 0 ]; then
+	    echo "PiDP-11 is already stopped." >&2
+	    status=1
+	else
+	    log_daemon_msg "Stopping PiDP-11" "pidp"
+	    screen -S pidp11 -X quit
+	    status=$?
+	    log_end_msg $status
+	fi
+	return $status
+}
+
+case "$1" in
+  start)
+	do_start
+	;;
+
+  stop)
+	do_stop
+	;;
+
+  restart)
+	do_stop
+	do_start
+	;;
+
+  status)
+	screen -ls pidp11 | egrep '[0-9]+\.pidp11'
+	;;
+
+  *)
+	log_action_msg "Usage: /etc/init.d/pidp11 {start|stop|restart|status}" || true
+	exit 1
+esac
+
+exit 0

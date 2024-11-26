@@ -1,0 +1,51 @@
+#!/bin/sh
+#
+### BEGIN INIT INFO
+# Provides:          blinkenlightd
+# Required-Start:    $portmap
+# Required-Stop:     $portmap
+# Default-Start:     S 2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Blinkenlight API server for BLINKENBUS
+# Description:       Blinkenlightd is a server that implements
+#                    the Blinkenlight API for a physical panel
+#                    connected over the blinkenbus driver.
+#                    The mapping between
+#                    - high level panels and controls objects on the API side
+#                    and
+#                    - the physical panel connected over BLINKENBUS signals
+#                    is read from the "configuration file"
+### END INIT INFO
+
+# cp this to /etc/init.d/blinkenlightd,
+# chmod a+x /etc/init.d/blinkenlightd
+
+BLINKENLIGHTD=/home/root/blinkenlightd
+
+test -f $BLINKENLIGHTD || exit 0
+
+case "$1" in
+    start)
+	echo "Starting blinkenlight api daemon..."
+        /sbin/start-stop-daemon --start --background --verbose --exec $BLINKENLIGHTD -- -c /etc/blinkenlightd.conf -b
+	;;
+    stop)
+        echo "Stopping blinkenlight api daemon..."
+        /sbin/start-stop-daemon --stop --verbose --exec $BLINKENLIGHTD
+	;;
+    reload)
+	;;
+    force-reload)
+        $0 restart
+	;;
+    restart)
+        $0 stop
+        $0 start
+	;;
+    *)
+	echo "Usage: /etc/init.d/blinkenlightd {start|stop|reload|restart}"
+	exit 1
+	;;
+esac
+
+exit 0

@@ -1,0 +1,649 @@
+
+II DEC Original Documentation
+---------------------------------
+           		KI10 Central Processor Maintenance Manual (Oct 1973, A-MN-KI10-0-MAN1)
+
+CHAPTER 3 OPERATION
+
+This chapter describes the processor controls and indicators that are readily accessible to the
+operator and discusses the normal operation of the processor, reader, punch, and console
+teletypewriter. Some maintenance information is included, but descriptions of any controls and
+indicators mounted behind the doors of the processor bays and the detailed discussion of
+operation for maintenance purposes are in section 10.2.
+
+3.1 CONTROL PANELS
+
+Photographs of the various processor control panels are printed on foldouts in Appendix B. Most
+of the controls and indicators used for normal operation of the processor and for program
+debugging are located on the console operator panel and the small maintenance panel just above
+it; these are shown together in Figure B-1. The panels at the tops of the bays contain only
+indicators, most of which are for maintenance (Figures B-2 to B4).
+
+In the upper half of the operator panel are four rows of indicators, and below them are three
+rows of two-position keys and switches. Physically both are pushbuttons, but the keys are
+momentary contact whereas the switches are alternate action. Relative to the internal logic, the
+switches are actually flipflops that are controlled by the buttons but which in many cases can
+also be "operated" by the program. A switch is on or represents a 1 when it is illuminated.
+Buttons that actually trigger operating sequences in the processor are the operating keys, which
+are located in the right half of the bottom row. Operating switches are those that supply
+control levels for governing various processor operations; these include the buttons in the left
+half of the bottom row (except SINGLE PULSER), the paging switches at the left end of the third
+row, and the buttons at the left in the top two rows at the left end of the maintenance panel.
+The remaining buttons are sense switches, groups that constitute switch registers, and various
+other special keys and switches that supply information to the program or to specific hardware
+functions, or perform special functions of various sorts separate from the normal processor
+operating sequence.
+
+The thirty-six numbered switches in the second row from the bottom on the operator panel and the
+twenty-two numbered switches in the row above them are the data and address switches through
+which the operator can supply words and addresses for the program and for use in conjunction
+with the operating keys and switches. At the right end of each of these switch registers is a
+pair of keys that clear or load all the switches in the register together. The load button sets
+up the switches according to the contents of the corresponding bits of the memory indicators
+(MI) in the fourth row. At the left end of the maintenance panel are switches to select the
+device for readin mode and a set of sense switches, which can be interrogated by the program.
+
+The center section of the maintenance panel contains a voltmeter and controls for margin
+checking, and the right section contains speed controls for slowing down the program. Between
+these is a counter that registers the total time processor power has been on (the counter reads
+hours if the line frequency is 50 Hz, but at 60 Hz it counts six for every five hours). Below
+the counter are four special buttons, two of which are locks that are used to prevent
+inadvertent manipulation of the keys and switches while the processor is running: the console
+data lock disables the data and sense switches; the console lock disables all other buttons
+except those that are mechanical, which group comprises the four under the counter and the
+readin device switches.
+
+Power is supplied to the system by means of the switch at the right end in the group under the
+counter. This switch is lit while power is on, but the power light in the upper right corner of
+the operator panel is lit only when the system is actually in operation or is ready for
+operation; after power turnon the light does not come on until power is stabilized in the
+correct range. At the left of the margin check controls are three red lights that indicate an
+overtemperature condition somewhere in the processor logic, a tripped circuit breaker, or a
+cooling assembly door open. Whenever any of these lights goes on the Power Failure flag sets and
+power automatically shuts down.
+
+3.1.1 Indicators
+
+When any indicator is lit the associated flipflop is 1 or the associated function is true. Some
+indicators display useful information while the processor is running, but many change too
+frequently and can be discussed only in terms of the information they display when the processor
+is stopped. The program can stop the processor only at the completion of the HALT instruction;
+the operator can stop it at the end of every instruction, in certain memory references, or
+following every clock pulse (the last allows extremely slow speed operation with the clock
+running slowly or each clock pulse triggered individually by the operator).
+
+Of the large groups of lights on the operator panel, the right half of the second row displays
+the contents of PC, the third row displays the instruction being executed or just completed, and
+the fourth row is the memory indicators. The left third of the third row displays IR; in an IO
+instruction the left three instruction lights are on, the remaining instruction lights and the
+left accumulator light are the device code, and the remaining accumulator lights complete the
+instruction code. The right half of the row displays the virtual address on the address bus, and
+the I and index lights reflect the states of the corresponding bits of the memory buffer. Hence
+the right two thirds of the row changes with every memory reference, and the I and index lights
+actually display the indirect bit and the index register address only following an instruction
+fetch or an indirect reference in an effective address calculation.
+
+Above the memory indicators appear two pairs of words, PROGRAM DATA and MEMORY DATA. If the
+triangular light beside the former pair is on, the indicators display a word supplied by a DATAO
+PI; if any other data is displayed the light beside MEMORY DATA is on instead. While the
+processor is running, the addresses used for memory reference are compared with the contents of
+the address switches in a manner determined by the paging switches and the User Address Compare
+Enable flag. Whenever the two addresses are equal and the comparison is enabled, the contents of
+the addressed location are displayed in the memory indicators. However, once the program loads
+the indicators, they can be changed only by the program until the operator turns on the MI
+program disable switch, executes a key function that references memory, or presses the reset key
+(see below).
+
+The four sets of seven lights at the left display the state of the priority interrupt channels.
+The PI ACTIVE lights indicate which channels are on. The IOB PI REQUEST lights indicate which
+channels are receiving request signals over the in-out bus; the PI REQUEST lights indicate
+channels on which the processor has accepted requests. Except in the case of a program-initiated
+interrupt, a REQUEST light can go on only if the corresponding ACTIVE light is on. The PI IN
+PROGRESS lights indicate channels on which interrupts are currently being held; the channel that
+is actually being serviced is the lowest-numbered one whose light is on. When an IN PROGRESS
+light goes on, the corresponding REQUEST goes off and cannot go on again until IN PROGRESS goes
+off when the interrupt is dismissed. PI ON indicates the priority interrupt system is active, so
+interrupts can be started (this corresponds to CONI PI, bit 28). PI OK 8 indicates that there is
+no interrupt being held and no channel waiting for an interrupt; this signal is used by the real
+time clock to discount interrupt time while timing user programs.
+
+Note: If a REQUEST light stays on indefinitely with the associated IN PROGRESS light off and PC
+is static, check the PI CYC light on the indicator panel at the top of the console. If it is on,
+a faulty program has hung up the processor. Press RESET.
+
+The four lights at the center of the top row indicate the processor mode. One and only one of
+these lights can be on and they represent the combined states of the User and Public flags. The
+rest of the top row contains the power light and the following control indicators.
+
+RUN
+
+The processor is in normal operation with one instruction following another (although the light
+remains on at a stop in a memory refererce). When the light goes off, the processor stops.
+
+STOP MAN
+
+The operator has stopped the processor by pressing STOP or RESET.
+
+STOP PROG
+
+The processor has been stopped by a HALT instruction. At the completion of the instruction the
+address lights display the jump address (the location from which the next instruction will be
+taken if the operator presses the - continue key), and the AR lights at the top of bay 2 display
+an address one greater than that of the location containing the instruction that caused the
+halt.
+
+STOP MEM
+
+The processor has stopped at a memory reference. This can be due to satisfaction of an address
+condition selected at the console, reference to a nonexistent memory location, or detection of a
+parity error.
+
+KEY MAINT
+
+One of the following switches is on (this light is equivalent to CONI APR, bit 8): FM MANUAL,
+MEM OVERLAP DIS, SINGLE PULSE, MARGIN ENABLE, SINGLE INST, STOP PAR. Any one of these switches
+being on implies that the processor is being operated for maintenance purposes, and is not
+running at maximum speed.
+
+KEY PG FAIL
+
+A key function has caused a page failure. No page fail trap is executed in response to a key-
+induced failure; if the processor is running, it continues the program.
+
+The remaining processor lights are on the indicator panels at the tops of the bays. No attempt
+is made here to explain the meanings of these lights, as that is effectively the objective of
+the next five chapters — the lights reflect the logic of the machine. The large groups of lights
+on the panel at the top of bay 2 (Figure B-3) display the contents of the adder, the AR, BR and
+MQ registers, and the selected location in fast memory. At the right of the registers are a
+number of miscellaneous control signals, primarily enables for the shift counter, but also the
+enables for the IR latches and signals associated with the fetching and completion of an
+instruction. At the right end the upper four rows display the SC adder, its data inputs, and the
+shift counter and floating exponent register. The bottom row displays the AR flags, where FXU is
+Floating (exponent) Underflow and DCK is No Divide (divide check). FXU HOLD is a nonprogram flag
+that plays a role in determining underflow conditions. At the end are the flipflops that inhibit
+the clock and prolong its period.
+
+The right halves of the top two rows of the bay 1 panel (Figure B-2) display the contents of the
+AD and AR extensions. Below these are three general flags used by the hardware and the enables
+for AD and ADX. The rest of the lights in the top four rows display all of the time state
+flipflops, flags and special control levels for the processor cycles, traps, and special
+sequences except those for in-out, priority interrupt, page fail and key functions. BYF6 in the
+top row is the First Part Done flag; the TN lights at the right end of the fourth row are the
+trap flags (TN 0 is Trap 2). The right half of the bottom row displays the physical address for
+each memory reference and the type of memory request. At the left are the lights for the
+associative memory. The AB 14-17 lights at the center are always either off or reflect the
+states of address switches 14-17.
+
+The lights in the top row of the panel on the console bay (bay 3, Figure B-4) display either the
+contents of the in-out bus, the paper tape reader buffer, MB, or the information supplied by the
+last DATO PAG, as selected by the 4-position switch in the right section of the maintenance
+panel. The rest of the panel displays the user and executive base registers, and a multitude of
+signals for memory control, fast memory control, the key logic, paging, priority interrupt, in -
+out, the basic in-out devices (reader, punch, teletypewriter) and the processor flags. Note that
+the TRAP ENABLE light at the center of the second row is the Page Enable flag, which also
+enables overflow traps (DATAI PAG, bit 22). PAGE LAST MUUO PUB at the very center of the panel
+is the Disable Bypass flag. The User IOT flag is in the middle of the third row, and COMP ADR
+BRK INH near the left end of the bottom row is Address Failure Inhibit.
+
+3.1.2 Operating Keys
+
+The operating keys can be used whether RUN is on or off. If the processor is running when a key
+is pressed, it simply pauses at an appropriate point in the program to perform a key cycle to
+execute the function. These key functions are effectively of three types. The first three keys
+on the left are for the initiating functions, read in, start, and continue: these functions
+place the processor in operation under conditions determined primarily by the function itself.
+The next two keys are for the terminating functions, stop and reset: if the processor is
+running, these functions stop it. The last five keys are for the independent functions, execute,
+examine, examine next, deposit, and deposit next. These functions have no inherent effect on
+processor operation: if the processor is not running it simply performs a key cycle and stops;
+if it is running, it pauses to perform a key cycle and continues the program. (However the data
+deposited or the instruction executed may have an effect.) Moreover the independent functions
+are affected by the setting of the paging switches, which determine the address space in which
+the function is performed.
+
+The logic responds to the keys in two stages. When a key is pressed or several are pressed
+simultaneously, the logic latches them. From among the buttons latched, the processor then
+accepts the request for the function that has priority; the priority order is the same as the
+order of the keys from left to right on the panel except that reset has first priority. As soon
+as a function request is accepted, the corresponding button lights up and remains lit until the
+function is completed. If the processor is not already in operation, it performs the accepted
+function immediately; otherwise it saves the function until it can be performed. While any
+button is lit, however, no function request can be accepted; in other words, although the
+processor will interrupt the program to perform a key function, it will not interrupt one key
+function for another. It will however do one key latch while a key is lit and accept the highest
+priority latched function once the current function is done. Provision is also made in the logic
+so that the RESET key can be used to stop the processor no matter what.
+
+READ IN
+
+Clear all IO devices and all processor flags. Turn on RUN and EXEC MODE KERNEL (trapping and
+paging will both be disabled as TRAP ENABLE at the top of the console bay will be off). Execute
+DATAI D,0 where D is the device code specified by the readin device switches at the left end of
+the maintenance panel (the rightmost device switch is for bit 9 of the instruction and thus
+selects the least significant octal digit (which is always 0 or 4) in the device code). Then
+execute a series of BLKI D,0 instructions until the left half of location 0 reaches zero. After
+storing the last word in the block, fetch that word as an instruction from the location in which
+it was stored as specified by PC. Since RUN has been set the processor begins normal operation
+at the location containing the last word. (For information on the data format refer to the
+System Reference Manual.)
+
+Note that the key function lasts throughout the processing of the entire block. This means that
+readin cannot be interrupted for another key function. Hence if it must be stopped (eg because
+of a crumpled tape), press RESET.
+
+START
+
+Turn on RUN and EXEC MODE KERNEL, and begin normal operation by fetching the instruction at the
+location specified by address switches 18-35. The memory subroutine for the instruction fetch
+loads the address into PC for the program to continue. This function does not disturb the flags
+or the IO equipment.
+
+CONT
+
+If STOP MEM is on begin normal operation at the point at which the processor is stopped in a
+memory subroutine. Otherwise turn on RUN and begin normal operation by fetching an instruction
+from the location specified by PC.
+
+STOP
+
+Turn off RUN so the processor stops with STOP MAN on. At the stop PC points to the location of
+the instruction that will be fetched if CONT is pressed (this is the instruction that would have
+been done next had the processor not stopped). The processor may stop in the middle of a two -
+part instruction, but pressing CONT restarts the instruction without repeating any first-part
+actions that would adversely affect the result.
+
+RESET
+
+Clear all IO devices, disable auto restart, high speed operation and margin programming, clear
+the processor flags (lighting EXEC MODE KERNEL), turn on the triangular light beside MEMORY DATA
+(turn off the light beside PROGRAM DATA), turn off RUN and stop the processor.
+
+If this function is not performed within 10 ms (eg because READ IN is lit), the key triggers a
+panic reset that produces all of the standard reset actions and also clears all but the
+mechanical console keys and switches. If STOP ever fails to stop the processor, pressing this
+key will, but not without destroying information. To save the processor state press SINGLE INST
+and SINGLE PULSE simultaneously.
+
+XCT
+
+Execute the contents of the data switches as an instruction without incrementing PC, even if 4
+skip condition is satisfied in the instruction. If PAGING USER is on and PAGING EXEC is off,
+execute the instruction in user virtual address space; otherwise use executive address space. If
+the instruction is an XCT or LUUO, the instruction called by it is also executed.
+
+Note that an instruction executed from the console can alter the processor state like any
+instruction in the program: it can halt the processor, can change PC by jumping, alter the
+flags, or even cause a non-existent memory stop (but not a page fail trap, even if it turns on
+the KEY PG FAIL light).
+
+         NOTE
+
+         The remaining key functions all reference memory. They can therefore light KEY PG FAIL
+         and set such flags as Nonexistent Memory and Parity Error, and they all turn on the
+         triangular light beside MEMORY DATA, turning off the light beside PROGRAM DATA.
+         Performing one of these functions with the ADDRESS STOP switch on stops the processor
+         in the memory subroutine (with STOP MEM on). These functions use an address supplied by
+         the address switches, and the way that address is interpreted is determined by the
+         paging switches. If both paging switches are off, the function uses a 22-bit absolute
+         physical address supplied by address switches 14-35, and fast memory references are
+         made to the block selected by the FM block switches at the left end of the maintenance
+         panel. If either paging switch is set, the function uses a virtual address supplied by
+         address switches 18-35 and the FM block switches have no effect (in other words the
+         function has access to one of the virtual address spaces defined for a normal program).
+         If PAGING EXEC is on, the function has access to executive address space; if PAGING
+         EXEC is off and PAGING USER is on, the function has access to user address space.
+
+EXAMINE THIS
+
+Display the contents of the location specified by the paging and address switches in the memory
+indicators.
+
+EXAMINE NEXT
+
+Add 1 to the address displayed in the address switches, and display the contents of the location
+then specified by the paging and address switches in the memory indicators.
+
+DEPOSIT
+
+Deposit the contents of the data switches in the location specified by the paging and address
+switches, and display the word deposited in the memory indicators.
+
+DEPOSIT NEXT
+
+Add 1 to the address displayed in the address switches, deposit the contents of the data
+switches in the location then specified by the paging and address switches, and display the word
+deposited in the memory indicators.
+
+3.1.3 Operating Switches
+
+Besides defining the address space for the independent key functions, the paging switches also
+perform this service for address comparison and for the group of five switches just at the left
+of the operating keys. Whenever the processor references memory or an accumulator, it may
+compare the virtual address used with that specified by address switches 18-35 and may take some
+action if the two are identical. There are a number of conditions that affect the comparison.
+First, comparison can be made only for memory references and accumulator write references —
+there is never a comparison for an index register reference or an accumulator read reference.
+Given the proper type of reference, the comparison must be enabled. If PAGING EXEC is on and
+PAGING USER is off, the comparison is enabled for executive address space; if PAGING EXEC is off
+and PAGING USER is on, the comparison is enabled for user address space provided the program has
+turned on USER ADR COMP (User Address Compare Enable flag) in the upper left corner of the
+console indicator panel; if both paging switches are on, the comparison is enabled for executive
+address space, provided USER ADR COMP is on (in other words with both switches on, PAGING USER
+applies the flag condition to PAGING EXEC). In a reference of the correct type with the
+comparison enabled, if the virtual address on the address bus is identical to the address in
+switches 18-35, the processor displays the contents of the addressed location or accumulator in
+the memory indicators (unless the light beside PROGRAM DATA is on).
+
+Except in an AC reference, the same situation that causes the word display can also be made to
+stop the processor or produce an address failure, depending upon the purpose for which the
+reference is made as selected by the three address condition switches. FETCH INST selects the
+condition that access is for retrieval of an instruction, including an instruction executed by
+an XCT, a user LUUO or a dispatch interrupt, but not a trap or standard interrupt instruction,
+nor one executed by an executive LUUO. FETCH DATA selects read-only access for retrieval of an
+operand or an address word in an effective address calculation, but not the PC word in an MUT°.
+WRITE selects access for writing, including read-modify-write, but not writing done by an MUM or
+executive LUUO. Whenever a memory reference satisfies both the comparison condition and any
+selected address condition, the processor performs the action selected by the other two
+switches. ADDRESS STOP halts the processor with STOP MEM on and PC pointing to the instruction
+that was being performed (running with ADDRESS STOP on slows down the processor). ADDRESS BREAK
+causes an address failure except in an instruction performed while COMP ADR BRK INH is on.
+ADDRESS STOP also stops any examine or deposit function in the memory subroutine.
+
+Conditions associated with the comparison are displayed by the COMP lights in the middle of the
+bay 3 indicator panel. From left to right these indicate an accumulator write reference, a
+memory read reference, equal addresses in a synchronous reference (an operand reference, but
+limited to the first in a double operand) and equal addresses in an asynchronous reference (an
+instruction fetch or the second in a double operand).
+
+The description of each switch relates the action it produces while it is on.
+
+SINGLE INST
+
+Whenever the processor is placed in operation, clear RUN so that it stops at the end of the
+first instruction. Hence the operator can step through a program one instruction at a time,
+pressing START for the first one and CONT for subsequent ones. Each time the processor stops,
+the lights display the same information as when STOP is pressed. Note that read in cannot be
+done in single instruction mode, as the function' extends over many instructions and there is
+thus no way to continue.
+
+APR CLK FLAG (Clock flag) on the console indicator panel is held off to prevent clock interrupts
+while SINGLE INST is on. Otherwise interrupts would occur at a faster rate than the
+instructions.
+
+         CAUTION
+
+         It is not generally worthwhile to attempt to use the interrupt system in single
+         instruction mode except with the slowest start-stop devices, such as reader, punch and
+         teletypewriter. In any event an interrupt hangs up the processor, and the
+         operator must dispose of it manually before single instruction operation can continue.
+
+SINGLE INST  will not stop the processor if a hangup prevents it from getting to the end of
+an instruction. Use STOP, RESET, or SINGLE PULSE.
+
+SINGLE PULSE
+
+Inhibit the clock so that a single clock pulse is generated each time SINGLE PULSER is pressed.
+If the processor is not already in operation, an operating key must be pressed before SINGLE
+PULSER can be used. If the processor is running, it converts to single pulse operation at the
+beginning of the instruction cycle; hence the clock will not stop if the processor does not
+reach the instruction cycle, say because it is hung up in a multiply or divide sequence. To
+force the processor into single pulse operation regardless of its position in the operating
+sequence, turn on both SINGLE INST and SINGLE PULSE; this stops the processor without destroying
+information, as would occur if RESET were pressed.
+
+STOP PAR
+
+Stop with STOP MEM on at the end of any memory reference in which even parity is detected in a
+word read. A parity stop is indicated by the following: PAR ERR FLAG (Parity Error flag) is on
+in the bottom row on the bay 3 indicator panel; and among the PAR lights in the third row from
+the bottom, ERR is on, IGN (ignore parity) is off, and BIT displays the parity bit for the word
+read.
+
+If IGN is on (it displays a signal from the memory), parity errors are not detected and no stop
+can occur. Running with STOP PAR on slows down the processor.
+
+STOP NXM
+
+Stop with STOP MEM on if a memory reference is attempted but the memory does not respond within
+100 ps. This type of stop is indicated by FLAGS NXM (Nonexistent Memory flag) being on in the
+bottom row on the bay 3 indicator panel.
+
+REPEAT
+
+If SINGLE PULSE is on and the processor is placed in operation, slow down the clock so that the
+processor runs at a clock rate determined by the speed controls at the right end of the
+maintenance panel. If the processor is not already running, it can be placed in single-pulse
+repeat operation by pressing an operating key and then pressing SINGLE PULSER. If the processor
+is running and the switches are turned on in the order REPEAT/SINGLE PULSE, then it goes into
+single pulse operation automatically at the beginning of the instruction cycle. If the processor
+is running with REPEAT off, it stops at the beginning of the instruction cycle when SINGLE PULSE
+is turned on; to restart it, turn on REPEAT and then press SINGLE PULSER twice. In any event
+repetition ceases (and the light in the SINGLE PULSER button goes off) whenever the processor
+gets to a point where the clock would have stopped anyway had SINGLE PULSE not been on. To
+restart, simply press SINGLE PULSER. The lamp in the SINGLE PULSER button goes off at each clock
+pulse and turns back on each time the clock is retriggered; hence the button glows with an
+intensity that is relative to the clock duty cycle (eg for a given speed, the light will be
+dimmer for a program with many memory references). When either REPEAT or SINGLE PULSE is turned
+off, operation terminates after one more clock.
+
+If SINGLE PULSE is off and any operating key is pressed, then every time the repeat delay can be
+retriggered, wait a period of time determined by the setting of the speed control and repeat the
+given key function. The point at which the processor can restart the repeat delay depends upon
+the type of key function being repeated as follows.
+
+         For an initiating function the delay starts when the processor stops with RUN off. This
+         is either when the program gives a HALT instruction (STOP PROG) or following the first
+         instruction if SINGLE INST is on.
+
+         For an independent function the delay starts every time the function is done whether
+         RUN is on or off.
+
+         A terminating function stops the processor and the delay starts every time the function
+         is repeated. Reset is generally used only to provide a chain of reset pulses
+         on the 10 bus, and stop is used to troubleshoot the clock.
+
+In any case continue to repeat the function until REPEAT is turned off. (The function is often
+repeated once more, but this is noticeable only with very long repeat delays.)
+
+The speed control includes a six-position switch that selects the delay range and a
+potentiometer for fine adjustment within the range. Delay ranges are as follows.
+
+                                Position	Range
+
+	                                 1	    200 ns to 2 us
+	                                 2	    2 us to 20 us
+	                                 3	    20 us to 500 us
+	                                 4      500 us to 6 ms
+	                                 5	    6 ms to 160 ms
+	                                 6      160 ms to 4 seconds
+
+MI PROG DIS
+
+Turn on the triangular light beside MEMORY DATA (turn off the light beside PROGRAM DATA) and
+inhibit the program from loading any switches or displaying any information in the memory
+indicators. The indicators will thus continually display the contents of locations selected from
+the console.
+
+MEM OVERLAP DIS
+
+Prevent memory control from overlapping cycles on the memory bus. (This has no effect on
+pipelining within memory control, such as overlapping the page checking of consecutive memory
+subroutines.)
+
+MARGIN ENABLE
+
+Enable maintenance operation, including writing with even parity in memory and checking speed or
+voltage margins. Maintenance actions attempted by the program are indicated by the last four
+lights on the left end of the second row from the bottom on the bay 3 indicator panel. With
+maintenance operation enabled, writing with even parity and checking speed margins are otherwise
+entirely under program control. Voltage margins may be checked by the program or the operator
+(for information on the margin select and manual margin address switches, refer to section
+10.2).
+
+FM MANUAL
+
+All fast memory references for any purpose (index register, accumulator, memory) and under any
+conditions are made to the fast memory block selected by the FM block switches. When FM MANUAL
+is off, the block switches control fast memory references only in examine and deposit type key
+functions with both paging switches off (ie with the function using physical addressing).
+Turning on FM MANUAL overrides all other conditions so that all fast memory references are
+controlled by the block switches.
+
+3.1.4 Panel Maintenance
+
+A panel indicator is worthless if the bulb is burned out. Before attempting to use the
+information presented by the panels, press the LAMP TEST button below the counter on the
+maintenance panel; this turns on all of the lamps so any that are burned out can easily be
+detected. To replace a lamp in a button, pull out the button cap. The bulb will come with the
+cap, so remove it, put a new one in the cap, and push the cap back into the panel.
+
+        CAUTION
+
+        The lamp test checks not only the bulbs but also indicator driver transistors and
+        indicator cables. Hence after changing a bulb always repeat the test. If the replacement
+        bulb will not light, the problem is probably more serious and requires more significant
+        corrective maintenance.
+
+Replacing a bulb for an indicator requires removal of the panel. To remove the operator
+panel on early units, place your hands at the bottom corners and press in on the flush catches
+that are underneath the ends of the panel. On later units, remove the panel by grasping. the
+small black latches on either side; then remove the inner aluminum lamp shield by lifting it
+out. The panel will snap free and can be pulled away. Pull out the bad bulb and insert a fresh
+one, but exercise some care in doing this — the bulb has a pair of pins that must be inserted in
+the socket, and shorting the terminals will burn out a transistor. After replacing the bad
+bulbs, snap the panel back in place.
+
+The indicator panels are hinged at the bottom. Grasp the panel at the top and pull down. It is
+unnecessary to return to the console to find the bad bulb, as each bay has its own lamp test
+button, located at the left of the lights behind the panel.
+
+On the maintenance panel the only lamps not in buttons are those for the failure indicators. To
+remove the panel, first remove the four switch knobs, each of which is held to its shaft by a
+pair of Allen set screws. The panel is held in place by Velcro strips at the ends and can be
+removed simply by pulling it out. Since handling the maintenance panel is somewhat of a chore,
+it is probably best to replace all three bulbs whenever one bums out. Press the panel back in
+place, then put on the knobs oriented so that the set screws are against the flats of the
+shafts. Tighten the screws. lightly, rock each switch to make sure it is oriented properly, and
+then tighten the screws thoroughly.
+
+3.2 CONSOLE IN-OUT EQUIPMENT
+
+The console teletypewriter is generally on a stand by the console. The reader and punch are
+located in a drawer above the maintenance panel, but the face of the reader is available on the
+front of the drawer, and at its right are a slot for removing tape from the punch and a pair of
+rocker switches for feeding tape through reader or punch. Indicators for all three devices are
+on the panel at the top of the console.
+
+The ASCII code used with all console teletypewriters and generally used for alphanumeric data on
+paper tape is shown on page A21. The main part of the diagram shows the configuration of bits 1-
+5 or channels 1-5 for the various characters in four sets, where a dot represents a 1 or a hole
+(the orientation of the tape is indicated by the little circles, which represent feed holes). At
+the left end is the configuration for channels 6 and 7 for the four sets of characters. Channel
+8 (which is not shown) is ordinarily used for parity. For the standard even parity of the
+teletypewriter, the eighth bit is 1 for the characters printed on the dark background.
+
+3.2.1 Reader
+
+The contents of the reader buffer can be displayed in the top row of lights on the indicator
+panel by setting the IND SELECT switch on the maintenance panel to PTR. The remaining indicators
+for the reader are the PTR lights at the middle of the bottom row and near the left end of the
+second row.
+
+Tapes for the reader must be unoiled and opaque. To load the reader, place the fanfold tape
+stack vertically in the bin at the right, oriented so that the front end of the tape is nearer
+the read head and the feed holes are away from you. Lift the gate, take three or four folds of
+tape from the bin, and slip the tape into the reader from the front. Carefully line up the feed
+holes with the sprocket teeth to avoid damaging the tape, and close the gate. Make sure that the
+part of the tape in the left bin is placed to correspond to the folds, otherwise it will not
+stack properly. If the program requires that the Tape flag be set and it is not, briefly press
+the feed switch at the right; setting the flag. also sets Done to signal the program that the
+tape is loaded. After the program has finished reading the tape, run out the remaining trailer
+by pressing the feed switch.
+
+3.2.2 Punch
+
+The punch is behind the reader in the console drawer. Fanfold tape is fed from a box at the rear
+of the drawer. After it is punched, the tape moves into a storage bin from which the operator
+may remove it through the slot on the front. Pushing the feed switch beside the slot clears the
+punch buffer and punches blank tape as long as it is held in. Busy being set prevents the switch
+from clearing the buffer, so pressing it cannot interfere with program punching.
+
+To load tape, first empty the chad box behind the punch. Then tear off the top of a box of
+fanfold tape (the top has a single flap; the bottom of the box has a small flap in the center as
+well as the flap that extends the full length of the box). Set the box in the frame at the back
+and thread the tape through the punch mechanism. The arrows on the tape should be underneath and
+should point in the direction of tape motion. If they are on top, turn the box around. If they
+point in the opposite direction, the box was opened at the wrong end; remove the box, seal up
+the bottom, open the top, and thread the tape correctly.
+
+To facilitate loading, tear or cut the end of the tape diagonally. Thread the tape under the
+out-of-tape plate, over the rear guide plate, and through the punch die block; open the front
+guide plate (over the sprocket wheel), push the - tape beyond the sprocket wheel, and close the
+front guide plate. Press the feed switch long enough to punch about a foot and a half of leader.
+Make sure the tape is feeding and folding properly in the storage bin.
+
+To remove a length of perforated tape from the bin, first press the feed switch long enough to
+provide an adequate trailer at the end of the tape (and also leader at the beginning of the next
+length of tape). Remove the tape from the bin and tear it off at a fold within the area in which
+only feed holes are punched. Make sure that the tape left in the bin is stacked to correspond to
+the folds; otherwise, it will not stack properly as it is being punched. After removal, turn the
+tape stack over so the beginning of the tape is on top, and label it with name, date, and other
+appropriate information.
+
+Indicators for the punch are the PTP lights near the middle of the bottom two rows. The numbered
+lights display the last line punched.
+
+3.2.3 Teletypewriter
+
+Connections for the console teletypewriter are at the vertical panel behind the door below the
+console table (Figure 3-1). In the upper half of this panel are two rotary switches that select
+the input and output speed, a toggle switch that selects the signal type, and a pair of sockets
+for the signal cable. The console teletypewriter is usually an LT35A Teletype (KSR), for which
+both rotary switches are set to 110, the toggle is set to CURRENT, and the signal cable is
+plugged into the upper socket. (For a Model 37 the speed would be 150, the toggle would be set
+to EIA, and the cable would be plugged into the lower socket.) In the lower half of the panel
+are switched and unswitched convenience outlets for the teletypewriter, scopes, and other
+equipment used at the console.
+
+The teletypewriter is actually two independent devices, keyboard and printer, which can be
+operated simultaneously. Power must be turned on by the operator. The switch is beside the
+keyboard, and has an unmarked third position (opposite ON), which turns on power but with the
+machine off line so it can be used like a typewriter. The keyboard resembles that of a standard
+typewriter. Codes for printable characters on the upper parts of the keytops are transmitted by
+using the shift key; most control codes require use of the control key. The line feed spaces the
+paper vertically at six lines to the inch, and must be combined with a return to start a new
+line. In line with the space bar are four red buttons, the left one of which is not connected.
+The local line feed and return keys affect the printer directly and do not transmit codes.
+Pressing REPT and striking any character key (with or without the shift key on) causes repeated
+transmission of the corresponding code so long as the repeat button is held down.
+
+Indicators for the teletypewriter are the TTI, TTO and TTY lights in the right half of the
+bottom two rows. The numbered TTI lights display the last character typed in from the keyboard.
+
+Procedures for loading paper and changing the ribbon are given below. For further information
+refer to Typing Unit section 574-220-100 in Teletype Bulletin 281B, Vol. 1 (Technical Manual:
+Model 35 Keyboard Send-Receive ( KSR) and Receive-Only (RO) Teletypewriter Sets), which is
+supplied with the machine.
+
+Paper. The unit has a sprocket feed and uses 8-1/2 X 11 fanfold form paper. Printed forms can be
+torn off against the edge of the glass window in front of the platen. To replace the paper,
+first remove the upper cover by pressing the cover release buttons on the sides. To free the
+remaining old paper for removal, lift the paper guides by pushing the lever marked PUSH at the
+right of the platen. To load new paper, insert it through the slot in the cover and over the
+plate behind, the platen, lining up the holes at the edges of the paper with the sprockets, and
+press the local line feed to draw the paper in under the platen.
+
+Figure 3-1 Console Teletypewriter Panel
+
+Ribbon. Replace the ribbon whenever it becomes worn or frayed or when the printing becomes too
+light. Disengage the old ribbon from the ribbon guides on either side of the type block, and
+remove the reels by lifting the spring clips on the reel spindles and pulling the reels off (the
+ribbon feed mechanism is called out in Figure 4 in the reference mentioned above). Remove the
+old tape from one of the reels and replace the empty reel on one side of the machine; install a
+new reel on the other side. Push down both reel spindle spring clips to secure the reels. Unwind
+the fresh ribbon from the inside of the supply reel, over the guide roller, through the two
+guides on either side of the type block, out around the other guide roller, and back onto the
+inside of the takeup reel. Engage the hook on the end of the ribbon over the point of the arrow
+in the hub. Wind a few turns of the ribbon and make sure that the reversing eyelet has been
+wound onto the spool. Make sure the ribbon is seated properly and feeds correctly in operation.
+

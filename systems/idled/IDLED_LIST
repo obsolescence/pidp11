@@ -1,0 +1,71 @@
+;
+;       **************************************************************
+;       *                                                            *
+;       *  IDLED_LIST - Use in SIMH to list IDLED when it is loadad  *
+;       *                                                            *
+;       *  Mike Hill                                    26-Jun-2018  *
+;       *                                                            *
+;       **************************************************************
+;
+; Outputted comments with '=' show sections which map vectors or stack
+; address onto the same address as instructions.
+;
+ECHO ; ===== VECTORS =====
+; ** VEC4: Time-out and odd-address errors
+E    000004-000007
+; ** VEC10: Illegal & reserved instructions
+E    000010-000013
+; ** VEC24: Power fail
+E    000024-000027
+; ** VEC100: Line-time clock vector
+E    000100-000103
+; ** VEC114: Memory system (parity) error
+E    000114-000117
+
+ECHO ; ===== STACKS =====
+E    000172-000173
+E    000176-000177
+
+ECHO ; ----- BOOT -----
+E -m 000000-000003
+; ** VEC4: Time-out and odd-address errors
+E    000004-000007
+; ** VEC10: Illegal & reserved instructions
+E    000010-000013
+
+ECHO ; ===== TRAP4 =====
+E -m 000014-000025
+; ** VEC24: power-fail vector
+E    000024-000027
+
+ECHO ; ===== SETUP =====
+E -m 000030-000057
+
+ECHO ; ----- FILMEM -----
+E -m 000060-000075
+
+ECHO ; ===== VEC100 =====
+E -m 000076-000103
+E    000100-000103
+
+ECHO ; ----- SETPAT -----
+E -m 000104-000113
+
+ECHO ; ----- ENACLK -----
+E -m 000114-000121
+; ** VEC114: Memory system error
+;E  000114-000117
+E -m 000122-000131
+
+ECHO ; ----- CLKINT -----
+E -m 000132-000167
+
+ECHO ; ===== INITSP =====
+E -m 000170-000171
+; ** KSP (used until multi-mode is enabled)
+E    000172-000173
+E -m 000172-000175
+E    000176-000177
+E -m 000176-000177
+;
+; END-OF-FILE

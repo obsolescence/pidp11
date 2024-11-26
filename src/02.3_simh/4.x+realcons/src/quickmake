@@ -1,0 +1,127 @@
+
+#
+# Config
+#
+USE_NETWORK=1
+USE_REALCONS=1
+
+
+# paths ------------------------------------------------------------------------------
+
+SRC=./
+BLINKENLIGHT_COMMON_DIR=$(SRC)/../../../00_common/
+BLINKENLIGHT_API_DIR=$(SRC)/../../../07.0_blinkenlight_api/
+REALCONS_DIR=$(SRC)/REALCONS/
+DISPLAY=$(SRC)/display/
+
+BIN=$(SRC)/../bin-rpi/
+#LIBPCAP=$(SRC)/../rpi-build/libpcap.a
+LIBPCAP=-lpcap
+
+# sources ------------------------------------------------------------------------------
+
+SIM = scp.c sim_console.c sim_fio.c sim_timer.c sim_sock.c \
+	sim_tmxr.c sim_ether.c sim_tape.c sim_disk.c sim_serial.c \
+	sim_video.c sim_imd.c
+
+PDP11D = PDP11
+PDP11 = ${PDP11D}/pdp11_fp.c ${PDP11D}/pdp11_cpu.c ${PDP11D}/pdp11_dz.c \
+	${PDP11D}/pdp11_cis.c ${PDP11D}/pdp11_lp.c ${PDP11D}/pdp11_rk.c \
+	${PDP11D}/pdp11_rl.c ${PDP11D}/pdp11_rp.c ${PDP11D}/pdp11_rx.c \
+	${PDP11D}/pdp11_stddev.c ${PDP11D}/pdp11_sys.c ${PDP11D}/pdp11_tc.c \
+	${PDP11D}/pdp11_tm.c ${PDP11D}/pdp11_ts.c ${PDP11D}/pdp11_io.c \
+	${PDP11D}/pdp11_rq.c ${PDP11D}/pdp11_tq.c ${PDP11D}/pdp11_pclk.c \
+	${PDP11D}/pdp11_ry.c ${PDP11D}/pdp11_pt.c ${PDP11D}/pdp11_hk.c \
+	${PDP11D}/pdp11_xq.c ${PDP11D}/pdp11_xu.c ${PDP11D}/pdp11_vh.c \
+	${PDP11D}/pdp11_rh.c ${PDP11D}/pdp11_tu.c ${PDP11D}/pdp11_cpumod.c \
+	${PDP11D}/pdp11_cr.c ${PDP11D}/pdp11_rf.c ${PDP11D}/pdp11_dl.c \
+	${PDP11D}/pdp11_ta.c ${PDP11D}/pdp11_rc.c ${PDP11D}/pdp11_kg.c \
+	${PDP11D}/pdp11_ke.c ${PDP11D}/pdp11_dc.c ${PDP11D}/pdp11_dmc.c \
+	${PDP11D}/pdp11_kmc.c ${PDP11D}/pdp11_dup.c ${PDP11D}/pdp11_rs.c \
+	${PDP11D}/pdp11_vt.c ${PDP11D}/pdp11_td.c ${PDP11D}/pdp11_io_lib.c \
+	$(DISPLAY)/display.c $(DISPLAY)/sim_ws.c $(DISPLAY)/vt11.c
+
+REALCONS= \
+        $(REALCONS_DIR)realcons.c     \
+        $(REALCONS_DIR)realcons_simh.c \
+        $(BLINKENLIGHT_API_DIR)blinkenlight_api_client.c \
+        $(BLINKENLIGHT_API_DIR)/rpcgen_linux/rpc_blinkenlight_api_clnt.c \
+        $(BLINKENLIGHT_API_DIR)/rpcgen_linux/rpc_blinkenlight_api_xdr.c \
+        $(BLINKENLIGHT_API_DIR)blinkenlight_panels.c \
+        $(BLINKENLIGHT_COMMON_DIR)bitcalc.c
+
+REALCONS_PDP11= \
+	    $(REALCONS_DIR)realcons_console_pdp11_20.c \
+	    $(REALCONS_DIR)realcons_console_pdp11_40.c \
+	    $(REALCONS_DIR)realcons_console_pdp11_70.c
+
+ALLSRCS = $(REALCONS) $(REALCONS_PDP11) $(SIM) $(PDP11)
+
+OBJS := ${ALLSRCS:c=o}
+PROG := ${BIN}pdp11_realcons
+
+
+# options ---------------------------------------------------------------------
+
+REALCONS_OPT=-DUSE_REALCONS \
+	-DBLINKENLIGHT_CLIENT	\
+	-I$(SRC)/REALCONS \
+	-I$(BLINKENLIGHT_COMMON_DIR) \
+	-I$(BLINKENLIGHT_API_DIR)/rpcgen_linux \
+	-I$(BLINKENLIGHT_API_DIR)
+
+PDP11_OPT = -DVM_PDP11 -I ${PDP11D} ${NETWORK_OPT} $(DISPLAY_OPT) ${REALCONS_OPT}
+
+NETWORK_OPT = -DUSE_NETWORK -isystem $(SYSROOTS)/usr/local/include $(LIBPCAP) -DHAVE_PCAP_NETWORK -DHAVE_TAP_NETWORK
+
+NETWORK_OPT += -Islirp -Islirp_glue -Islirp_glue/qemu -DHAVE_SLIRP_NETWORK -DUSE_SIMH_SLIRP_DEBUG slirp/*.c slirp_glue/*.c
+
+CC_DEFS =
+OS_CCDEFS = -D_GNU_SOURCE
+CC_DBG_FLAGS = -O2 -Wno-unused-result
+LDFLAGS = -lrt -lm  -lpthread -ldl -lreadline -ltirpc -ldbus-1
+CC = gcc -std=c99 -U__STRICT_ANSI__  $(CC_DEFS) $(OS_CCDEFS) -I $(SRC) $(CC_DBG_FLAGS) -UUSE_REALCONS -I/usr/include/tirpc
+CC_OUTSPEC = -o $@
+
+
+# networking and video -------------------------------------------------------------------------------------------
+
+find_exe = $(abspath $(strip $(firstword $(foreach dir,$(strip $(subst :, ,$(PATH))),$(wildcard $(dir)/$(1))))))
+find_lib = $(abspath $(strip $(firstword $(foreach dir,$(strip $(LIBPATH)),$(wildcard $(dir)/lib$(1).$(LIBEXT))))))
+find_include = $(abspath $(strip $(firstword $(foreach dir,$(strip $(INCPATH)),$(wildcard $(dir)/$(1).h)))))
+
+VIDEO_CCDEFS += -DHAVE_LIBSDL -DUSE_SIM_VIDEO `sdl2-config --cflags`
+VIDEO_LDFLAGS += `sdl2-config --libs`
+VIDEO_FEATURES = - video capabilities provided by libSDL2 (Simple Directmedia Layer)
+DISPLAY_OPT += -DUSE_DISPLAY $(VIDEO_CCDEFS) $(VIDEO_LDFLAGS)
+$(info using libSDL2: $(call find_include,SDL2/SDL))
+VIDEO_CCDEFS += -DSDL_MAIN_AVAILABLE
+
+
+# MKDIRBIN cmd used by SimH 4.x rules
+#ifneq (binexists,$(shell if $(TEST) -e $(BIN); then echo binexists; fi))
+    MKDIRBIN = mkdir -p $(BIN)
+#endif
+
+
+#
+# Build everything
+#
+ALL = pdp11
+
+all : pdp11_realcons
+
+clean :
+	if exist BIN\*.exe del /q BIN\*.exe
+	if exist BIN rmdir BIN
+#	rm -f $(OBJS)
+
+pdp11_realcons : ${BIN}pdp11_realcons${EXE}
+
+${BIN}pdp11_realcons${EXE} : ${PDP11} ${SIM} $(REALCONS) $(REALCONS_PDP11)
+	${MKDIRBIN}
+	${CC} ${PDP11} ${SIM} $(REALCONS) $(REALCONS_PDP11) ${PDP11_OPT} $(CC_OUTSPEC) ${LDFLAGS}
+	file ${BIN}pdp11_realcons${EXE}
+
+%.o : %.c 
+	${CC} ${PDP11_OPT} -c -o $@ $< 

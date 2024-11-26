@@ -1,0 +1,458 @@
+
+Behaviour of the PDP-11/40 console panel KY11-D
+#################################################
+
+I Differences to the DEC documentation by watching real 11/40 video
+===================================================================
+http://www.youtube.com/watch?v=iIsZVqhaneo
+http://www.youtube.com/watch?v=Foch69Nm2F0&feature=related
+
+- PROC and BUS is always ON in console mode  (RUN,BUS,PROC,CONSOLE)
+- RESET seems to be 70ms, instead of 20ms
+- LOADADR:
+  - after LOADADDR, DATA does NOT show the entered address
+  - all DATA lights are on for a short period (DATA FLASH)
+  - after LOADADDR, DATA DOES NOT SHOW the ADDR. Instead it is cleared after the Flash
+- after DEP, all DATA lights are on for a short period (DATA FLASH)
+- START:
+   - CONSOLE LED OFF if START 0->1
+   - machine starts after START 1->0
+   - DATA FLASH after START 1 -> 0
+- not clear whether DATA flashes on HALT
+
+- PROC and BUS is ON after RESET
+
+
+
+II Original DEC documentation
+
+Controls on PDP-11/40 programmer's console KY11D
+=================================================
+
+From "PDP-11-40, -11-35 (21 inch chassis) system manual (Jan 1975, EK-11040-TM-002).pdf"
+Chapter 3
+
+
+1. PDP11/40 Console Indicators
+
+1.1. Indicator DATA
+
+1.1.1. Type
+16-bit display
+MSB at left
+Color-coded in 3-bit segments for octal format
+Byte division noted with additional indexing for octal format in upper byte
+
+1.1.2. Function
+Displays the output of a processor data multiplexer which gates information from
+a variety of sources within the processor. Normal programming use results in the
+following displays:
+
+HALT instruction has R(00)
+RESET instruction has R(00)
+WAIT instruction has R(IR)
+SINGLE STEP and HALT switch has Processor Status (PS)
+
+The display of the data multiplexer is especially important when used in the
+single clock mode.  During this mode, the KM11 Maintenance Console is used to
+step through a program a single microword at a time. In this instance, the
+information in the DATA display is the result of a single microword and shown on
+the processor flow diagrams (refer to KD11-A Processor Manual).
+
+1.1.3. Remarks
+When console switches are used, information shown on the DATA display is as follows:
+
+LOAD ADRS - the transferred Switch register address.
+
+DEP - the Switch register data just deposited. Note that data and address are
+correlated. The address is where this data was stored.
+
+EXAM - the information from the address examined. Note address and data correlate.
+
+HALT - displays the current Processor Status (PS) word.
+
+When a programmed HALT instruction is issued, bus control is transferred to the
+console and processor register RO is displayed on the DATA display. This allows
+program identification of halts.
+
+During DMA operations, the processor is not involved in data transfer functions.
+Therefore, the data displayed in the DATA display is not that of the last bus
+operation.
+
+
+1.2. Indicator ADDRESS
+
+1.2.1 Type
+18-bit display
+MSB at left
+Color-coded in 3-bit segments for octal format
+
+1.2.2. Function
+Displays the address in the Bus Address register (BAR) of the processor.  This
+varies with an instruction execution but for a HALT, WAIT, or single step
+operation, the program counter is displayed between operations. The updated (or
+incremented) value of the program counter is always displayed.
+
+If the KT11-D Memory Management Option is not included in the system, the two
+most significant bits (A17, A16) are ordered according to the lower 16 bits;
+they are set only when bits A15, A14, and A 13 are all set. Addresses between
+160000 and 177777, therefore, are translated to addresses between 760000 and
+777777, respectively.
+
+If the KT11-D option is installed, the ADDRESS display usually displays a
+virtual address with the KT11-D providing an offset physical bus address (not
+displayed). During console operations, however, the console provides and
+displays a full 18-bit physical address.
+
+1.2.3. Remarks
+When console switches are used, information shown on the ADDRESS display is as
+follows:
+
+LOAD ADRS - the transferred Switch register address.
+
+DEP or EXAM - indicates the bus address just deposited into or examined.
+
+During a programmed HALT or WAIT instruction, the ADDRESS displays the
+incremented address of the instruction. The BAR is the instruction location plus 2.
+
+In single instruction mode, the next PC is placed into the BAR and displayed in
+ADDRESS between instructions.
+
+During DMA operations, the processor is not involved in the data transfer
+functions, and the address displayed in the ADDRESS display is not that of the
+last bus operation.
+
+Within instructions, the display indicates various processor bus addresses.
+These values are apparent only in a maintenance mode, using the KM11 and single
+clocking.
+
+
+1.3. Indicator RUN
+
+1.3.1. Type
+Single light
+
+1.3.2. Function
+When the RUN indicator is on, the processor clock is running and is operating on
+an instruction or looping in console operation.
+
+When the RUN indicator is off, the microprogramming is not processing an
+instruction. The processor may be in control of the bus and awaiting a response
+for a data transfer; or the processor may have refilinquished bus control for
+an NPR or BR request.
+
+1.3.3. Remarks
+During normal machine operation, the RUN light flickers on and off (indicated by
+a faint glow).
+
+A programmed RESET command turns off the RUN light. This also occurs between
+single clocks when the KM11 Maintenance Console is used.
+
+For programmed HALT and WAIT instructions, the clock continues to run with the
+processor looping in the microprogram. This is also true for console operation
+from the HALT switch
+
+
+1.4. Indicator PROC
+
+1.4.1. Type
+Single light
+
+1.4.2. Function
+When on, indicates that the processor is controlling the Unibus as the master device.
+
+1.4.3. Remarks
+When the PROC light is on and the RUN light is off, the processor is waiting for
+data from the bus.
+
+
+1.5. Indicator BUS
+
+1.5.1. Type
+Single light
+
+1.5.2. Function
+When on, indicates that some device has control of the Unibus. If the PROC
+indicator is lighted, that device is the processor.
+
+1.5.3. Remarks
+This display is useful for determining where bus control is and that it is present.
+
+
+1.6. Indicator CONSOLE
+
+1.6.1. Type
+Single light
+
+1.6.2. Function
+When on, indicates that the processor is in the console mode (manual operation).
+Control switch activation is sensed and acted upon.
+
+1.6.3. Remarks
+NPRs and BRs are not serviced in the console mode. Bus errors are also serviced
+differently (see Table 3.2 for details).
+
+
+1.7. Indicator USER
+
+1.7.1. Type
+Single light
+
+1.7.2. Function
+When on, indicates that the processor is in the user mode and certain KT11-D
+restrictions on instruction operation and processor status (PS) word loading
+exist. Refer to the KT11-D option discussion in Chapter 4 of this manual and
+the KT11-D manual.
+
+1.7.3. Remarks
+Does not function unless the KT11-D Memory Management Option has been installed
+in the system.
+
+
+1.8. Indicator VIRTUAL
+
+1.8.1. Type
+Single light
+
+1.8.2. Function
+When on, indicates that a virtual address is displayed in the ADDRESS display.
+This virtual address is usually modified by the KT11-D option to provide a
+different physical address for the Unibus. If the KT11-D option is installed,
+this display is usually active during program operation. During console
+operation, the console ADDRESS display and Switch register both provide a full
+18-bit physical address. The VIRTUAL light is off in this instance.
+
+When VIRTUAL light's off, it indicates that the bus address indicated by the
+ADDRESS display is the physical address.
+
+1.8.3. Remarks
+Does not function unless the KT11-D Memory Management Option has been installed
+in the system.
+
+
+
+2. PDP11/40 Console Controls
+
+2.1. Switch OFF/POWER/LOCK
+
+2.1.1. Type
+3-position, key operated switch
+
+2.1.2. Function
+Provides system power control and lock-out of console controls as follows:
+
+OFF position - removes all power from the system. (System not being used.)
+
+
+POWER position - applies primary power to the system. All console controls are
+fully operational when switch is in this position. (Normal Operation.)
+
+LOCK position - disables all console (panel) controls except the Switch register
+key switches. This prevents inadvertent control switch operation from disturbing
+a running program. (System operating, console control disabled.)
+
+The data entered in the Switch register is still available to the processor
+whenever the program explicitly addresses the Switch register (address 777570).
+
+2.1.3. Remarks
+
+
+2.2. Switch register
+
+2.2.1. Type
+18 key-type switches
+Bit position of each switch is labeled; MSB is at left.
+Color-coded in 3-bit segments for octal format.
+Up position - logical one (or on). Down position - logical zero (or off).
+
+2.2.2. Function
+Provides a means of loading an address or data word into the processor.
+
+If the word in the Switch register represents an address, it can be loaded into
+the ADDRESS register by depressing the LOAD ADRS key.
+
+If the word contains data, it is loaded into the address specified by the
+ADDRESS register by lifting the DEP key.
+
+If the KT11-D Memory Management Option used, bits 17 and 16 are directly used
+as the physical bus address during console operation.
+
+If the KT11-D option is not installed, the processor bus address bits 17 and 16
+are set if Switch register bits 15, 14, and 13 are all set. Bits 17 and 16 of the
+Switch register have no effect.
+
+The contents of the Switch register may be used by the processor any time the
+program explicitly addresses the register at address 777570. This address can
+only be used by the processor.
+
+2.2.3. Remarks
+
+
+2.3. Switch LOAD ADRS
+
+2.3.1. Type
+Momentary key-type switch
+Depress to activate
+
+
+2.3.2. Function
+The LOAD ADRS switch transfers the contents of the Switch register to the Bus
+Address register (BAR) through a temporary location R(ADRSC) within the
+processor. This bus address, displayed in ADDRESS, provides an address for the
+console functions of EXAM, DEP, and START.
+
+2.3.3. Remarks
+The address is loaded into a temporary location which is not modified during
+program execution. To restart a program at a previously specified address, it is
+only necessary to depress the START switch.
+
+NOTE: Consecutive examine or deposit functions increment the value of the loaded
+address both in the BAR and in R(ADRSC).
+
+Console operations are word-ordered operations. If an odd bus address (bit 00
+enabled) is used, the odd address is stored in the Bus Address register and the
+temporary location. Examine or deposit operations on this address will be
+treated as word operations (bit 00 is ignored).
+
+
+2.4. Switch EXAM
+
+2.4.1. Type
+Momentary key-type switch
+Depress to activate
+
+2.4.2. Function
+The EXAM switch uses the contents of R(ADRSC) as a bus address; the contents of
+this bus address is displayed in DATA, the bus address is displayed in ADDRESS.
+
+A LOAD ADRS operation usually pre-establishes the initial R(ADRSC) address;
+sequential examines automatically update R(ADRSC).
+
+If the EXAM switch is depressed twice in succession, the contents of R(ADRSC) is
+word incremented and the next sequential bus address is examined. This action
+is repeated each time EXAM is depressed provided no other switch is used between
+these steps. When the LOAD ADRS or DEP switch is depressed, it destroys the
+incrementing sequence. The next time EXAM is used, it displays the current
+address rather than the next sequential address.
+
+
+2.4.3. Remarks
+If an odd address is examined, bit 00 is ignored. For example, if address 1001
+is examined, the address 1000 to displayed in ADDRESS. Byte data for location
+1001 is located in DATA (bits 15-08).
+
+An EXAM operation that references a non-existent address causes a time out (with
+no TRAP) and the Switch register address (777570) is displayed in DATA.
+
+
+2.5. Switch CONT
+
+2.5.1. Type
+Momentary key-type switch
+Depress to activate
+
+2.5.2. Function
+Causes the processor to continue operation from the point at which it had
+stopped.
+
+If the ENABLE/HALT switch is in the ENABLE mode, CONT returns bus control from
+the console to the processor and continues program operation.
+
+If the ENABLE/HALT switch is set to HALT, depressing the CONT key causes the
+processor to perform a single instruction. Control is returned to the console
+after each instruction, permitting a program to be stepped through one
+instruction at a time. BRs and interrupts are serviced in this mode of
+operation.
+
+2.5.3. Remarks
+If program stops, depressing CONT provides a restart without power clear.
+Because the restart occurs through the service portion of machine operation, any
+outstanding BRs may be serviced before program operation.
+
+
+2.6. Switch ENABLE/HALT
+
+2.6.1. Type
+2-position, key-type switch
+
+2.6.2. Function
+Allows either the program or the console to control processor operation.
+
+ENABLE position - permits the system to run in a normal manner. No console
+control requests are made.
+
+HALT position - halts the processor after the next instruction or outstanding
+TRAP sequences, and before Unibus Bus Requests service, and passes control to
+the console.
+
+The HALT mode is used with the CONT switch to step the machine through programs
+one instruction at a time.
+
+When the START switch is activated in the HALT mode, a system clear is effected
+without program start. This mode of operation is useful for clearing conditions
+in the system that might prevent proper operation. When the START switch is
+activated in the ENABLE mode, it provides a system clear with a program start.
+
+2.6.3. Remarks
+Continuous program control requires the ENABLE mode.
+
+The HALT mode is used to interrupt program control, perform single instruction
+operation, or clear the system.
+
+
+2.7. Switch START
+
+2.7.1. Type
+Momentary key-type switch
+Depress to activate initialize, release to have START function occur.
+
+
+2.7.2. Function
+Depressing the START switch provides a system clear (initialize). When the
+ENABLE/HALT switch is set to HALT, the processor does not start.
+
+When ENABLE/HALT is set to ENABLE, releasing START begins processor operation.
+The starting address is that of the last console operation determined by
+R(ADRSC). Usually, this temporary location is loaded from the Switch register
+by a LOAD ADRS operation.
+
+If the program stops at any time, it can be restarted at its original location
+by the START switch: the value of R(ADRSC) remains unchanged.
+
+Use of the START switch in the HALT mode provides for a system clear. This mode
+of operation is useful for clearing conditions that might prevent proper
+operation.
+
+2.7.3. Remarks
+
+
+2.8. Switch DEP
+
+2.8.1. Type
+Momentary key type switch
+Lift to activate
+
+2.8.2. Function
+The DEP switch uses the contents of R(ADRSC) as a bus address. The contents of
+the Switch register are transferred to this location. After use, the data
+appears on the DATA display and the address is on the ADDRESS display.
+
+A LOAD ADRS operation usually preestablishes the initial address; sequential DEP
+operations automatically update R(ADRSC).
+
+If the DEP switch is raised twice in succession, the contents of the Switch
+register is deposited in the next sequential bus address location. This action
+is repeated each time DEP is raised provided no other switch is used between
+these steps. Whenever the LOAD ADRS or EXAM switch is depressed, it destroys the
+incrementing process. The next time DEP is used, it deposits the current address
+rather than the next sequential address.
+
+2.8.3. Remarks
+If an attempt is made to deposit an odd address, bit 00 is ignored and a word
+deposit occurs.
+
+A deposit operation that references a non-existent address causes a time out
+(with no TRAP). No error message is visible front the console for a deposit to a
+non-existent address. An immediate verification by an examine operation,
+however, would result in the display of the Switch register address in the DATA
+display.

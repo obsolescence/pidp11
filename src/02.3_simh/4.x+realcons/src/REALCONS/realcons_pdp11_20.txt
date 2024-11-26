@@ -1,0 +1,531 @@
+
+Behaviour of the PDP-11/40 console panel KY11-D
+#################################################
+
+
+From PDP11-20 system manual (May 1973, DEC-11-HR1B-D).pdf, Chapter III
+--------------------------------------------------------------------------
+
+3. PDP-11/20 console
+
+3.1 INTRODUCTION
+
+This chapter provides the information necessary to operate the PDP-11/20 System and associated Model 33 ASR
+Teletype. The description is divided into two major parts: controls and indicators, and control interaction.
+
+The description of controls and indicators (Paragraph 3.2) is in tabular form and provides the user with the
+location, type, and function of each operating switch and indicator on the programmer's console and teletype.
+Operating controls for external devices are beyond the scope of this discussion; for these devices refer to
+the appropriate peripheral manual and the Unibus Interface Manual.
+
+The control interaction discussion (Paragraph 3.3) examines the relationships between controls and indicators
+and the system. This is an expansion of Paragraph 3.2, Controls and Indicators.
+
+Step-by-step procedures for both manual and program operation are given in Chapter 4.
+
+
+3.2 CONTROLS AND INDICATORS
+
+The controls and indicators used to operate the PDP-11/20 System are detailed in the following paragraphs.
+These paragraphs describe the KYI 1-A programmer's console and the ASR 33 Teletype.
+
+3.2.1 Programmer's Console
+
+Manual operation of the PDP-11/20 System is controlled by switches mounted on the programmer's console (front
+panel of the basic mounting box). Visual displays indicate processor operation and the contents of address and
+data registers.
+
+All register displays and switches, whether marked on the console or not, are numbered from right to left. The
+numbers correspond to the powers of two, i.e., 2^15 ... 2^2, 2^1, 2^0. Therefore, the most significant bit
+(MSB) is at the left of each specific register or display, the least significant bit (LSB) is at the right.
+Whenever an indicator is on, it denotes the presence of a binary 1 in the particular bit position. The
+alternate color coding on the console identifies the different functions or segments of the binary number in
+octal format.
+
+Figure 3-1 shows the location of all PDP-11/20 console controls and indicators. Each indicator and associated
+function is listed in Table 3-1. Each control and related function is listed in Table 3-2.
+
+
+DATA indicator:
+===============
+Type:
+-----
+16-bit display
+MSB at left
+Color-coded in 3-bit segments for octal format
+Vertical center line divides 16-bit word into 8-bit bytes.
+Indicators to right of center line indicate low-order (even) byte;
+
+Function:
+---------
+Displays the information within the data paths of the processor. This is not a single register, but the
+logical sum of two latch registers on the data paths. For most console functions, one register is zeroed while
+the other contains the desired information.
+
+This display of the data paths, the central data flow through the processor, is especially important when used
+in a single clock mode with the Maintenance Panel Option (KM11-A).
+
+Data is manually loaded into the DATA register (data paths) by setting the data value into the SWITCH REGISTER
+and lifting the DEP switch.
+
+Remarks:
+--------
+When console switches are used, information shown on the DATA display is as follows:
+
+LOAD ADDR - no indication
+
+DEP - the SWITCH REGISTER information just deposited. Note that the data and address correlated. The address
+is where this data was stored.
+
+EXAM - the information from the address examined - note address and data correlation.
+
+S-INST - when stepping through a program a single instruction at a time, there is no indication on the DATA
+display.
+
+S-CYCLE - the information last in the data paths (refer to flow diagram). Usually is a derivative of last bus
+data.
+
+During HALT and WAIT instructions, information shown on DATA display is as follows:
+
+WAIT - The RUN light is on, no indication on DATA display.
+
+HALT - when bus control is transferred to the console on a HALT instruction, processor register RO is
+displayed. This allows program identification of halts.
+
+During direct memory access (EMA) operations, the processor is not involved in data transfer functions.
+Therefore, the data displayed in the DATA display is not that of the last bus operation.
+
+
+ADDRESS REGISTER indicator:
+============================
+Type:
+-----
+18-bit display MSB at left
+Color-coded in 3-bit segments for octal format
+
+Function:
+---------
+Displays the address in the bus address register (BAR) of the processor. This is the address last used by the
+processor on the bus.
+
+The BAR is 18 bits, allowing for future expansion. At present, the two most significant bits (A17, A16) are
+ordered according to the lower 16 bits; they are set only when bits A15, A14, and A13 are set. Addresses
+between 160000 and 177777, therefore, are translated to addresses between 760000 and 777777, respectively.
+
+
+Remarks:
+--------
+When console switches are used, information shown on the ADDRESS REGISTER display is as follows:
+
+LOAD ADDR - the transferred SWITCH REGISTER information
+
+DEP or EXAM — indicates the bus address just deposited into or examined.
+
+S-INST or S-CYCLE — indicates the last processor bus address.
+
+During a programmed HALT or WAIT instruction, the ADDRESS REGISTER displays the address of the instruction.
+The program counter (PC) is the BAR value plus 2.
+
+During direct memory access (DMA) operations, the processor is not involved in the data transfer functions,
+and the address displayed in the ADDRESS REGISTER is not that of the last bus operation.
+
+
+
+
+RUN indicator:
+=============
+Type:
+-----
+Single light
+
+Function:
+---------
+When the RUN indicator is on, the processor dock is running. The processor has control of the bus and is
+operating on an instruction.
+
+When the RUN indicator is off, the processor is waiting for an asynchronous peripheral data response; or the
+processor has given up bus control to the console or to a peripheral.
+
+
+Remarks:
+--------
+During normal machine operation the RUN light will flicker on and off (indicated by a faint glow).
+
+Special situations exist for programmed HALT and WAIT instructions:
+WAIT — the RUN light is completely on
+HALT — the RUN light is off
+
+During machine operation, with S-INST or S-CYCLE control transferred to the console, the RUN light is not on.
+
+
+
+BUS indicator:
+==============
+Type:
+-----
+Single light
+
+Function:
+---------
+When the BUS indicator is on, a peripheral device (other than the console) is controlling the bus.
+
+Remarks:
+--------
+When both the BUS and RUN indicators are off, the bus control has been transferred to the console.
+
+The bus light probably is never seen except when there is a bus malfunction or when a peripheral holds the bus
+for excessive periods of time. Refer to Paragraph 3.3 for further discussion of BUS and RUN indicator
+combinations.
+
+During machine operation with S-INST or S-CYCLE, control is transferred to the console and the BUS indicator
+is not on.
+
+
+NOTES:
+======
+
+1. When the processor is in a major machine state (FETCH, EXEC, SOURCE, DESTINATION), the appropriate major
+state indicator is on and the following, associated RUN and BUS conditions occur.
+
+a. The RUN indicator is on when the processor clock is running (processor in control of bus).
+
+b. The RUN indicator is off when processor is waiting for data from the bus (processor in control of bus, but
+clock is off).
+
+c. The RUN indicator is off and the BUS indicator is on when an NPR is being serviced (processor is not in
+control of the bus).
+
+2. There is no major state indicator on the console for the major machine state of Service. In this state,
+break requests are honored, machine instructions of WAIT and HALT are executed, and trap sequences for
+instruction and bus interrupts are implemented.
+
+
+FETCH indicator:
+=================
+
+Type:
+-----
+Single light
+
+Function:
+---------
+When on, the processor is in the FETCH major state and is obtaining an instruction.
+
+Remarks:
+--------
+During the Fetch major state, only FETCH and RUN indicators are on if no NPRs are honored.
+
+
+EXEC indicator:
+=================
+Type:
+-----
+Single light
+
+Function:
+---------
+When on the processor is in the EXECUTE major state. The processor performs the action specified by the
+instruction. (HALT, WAIT, and trap instructions are executed in Service.)
+
+Remarks:
+--------
+During the Execute major state, only EXEC and RUN indicators are on if no NPRs are honored.
+
+
+SOURCE indicator:
+=================
+
+Type:
+-----
+Single light
+
+Function:
+---------
+When on, the processor is in the Source major state and is obtaining source operand data. The processor
+calculates source address data as indicated by cycles of the ADDRESS lights.
+
+
+Remarks:
+--------
+During the Source major state, SOURCE and RUN indicators are both on; ADDRESS lights may be on in various
+combinations. The BUS indicator is off if no NPRs are honored.
+
+
+DESTINATION indicator:
+=====================
+
+Type:
+-----
+Single light
+
+Function:
+---------
+When on, the processor is in the Destination major state and is obtaining destination operand data. The
+processor calculates destination address data as indicated by cycles of the ADDRESS lights.
+
+
+Remarks:
+--------
+During the Destination major state, DESTINATION and RUN indicators are both on; ADDRESS lights may be on in
+various combinations. The BUS indicator is off if no NPRs are honored.
+
+
+ADDRESS indicator:
+=================
+Type:
+-----
+Two lights representing a 2-bit binary code
+
+MSB is on the left
+
+Function:
+---------
+When lit, indicate bus cycles used to obtain address data during Source and Destination major states.
+
+The 2-bit binary code indicates which address cycle (1, 2, or 3) the machine is in during the Source or
+Destination major state.
+
+Remarks:
+--------
+Whenever either one or both ADDRESS lights are lit, either the SOURCE or DESTINATION indicator is on.
+
+The BUS indicator is off if no NPRs are honored.
+
+
+OFF/POWER/PANEL LOCK control:
+==============================
+Type:
+-----
+3-position, key operated switch
+
+Function:
+---------
+Provides power control to console and lock-out of console controls as follows:
+
+OFF position - removes all power from the processor.
+
+POWER position - applies primary power to the processor. All console controls are fully operational when
+switch is in this position.
+
+PANEL LOCK position disables all console (panel) controls except the SWITCH REGISTER key switches. This
+prevents inadvertant switch operation from disturbing a running program.
+
+The data entered in the SWITCH REGISTER are still available to the processor whenever the program explicitly
+addresses the SWITCH REGISTER (address 777570).
+
+
+
+SWITCH REGISTER  control:
+=========================
+Type:
+-----
+18-key-type switches
+
+Bit position of each switch is labeled; MSB is at left.
+
+Color-coded in 3-bit segments for octal format.
+
+Up position — logical one (or on). Down position — logical zero (or off)
+
+
+Function:
+---------
+Provides a means of manually loading a 16-bit address or 16-bit data word into the processor. The processor
+ignores bits 17 and 16; these switches may be set to either position. For addresses using bits 17 and 16,
+these bits are set within the processor if bits 15, 14, and 13 are set.
+
+If the word in the SWITCH REGISTER represents an address, it can be loaded into the ADDRESS REGISTER by
+depressing the LOAD ADDR key.
+
+If the word contains data, it is loaded into the address specified by the ADDRESS REGISTER by lifting the DEP
+key. The data appear in the DATA display.
+
+The contents of the SWITCH REGISTER may be used by the processor any time the program explicitly addresses the
+register at address 777570. This address can only be used by the processor.
+
+
+LOAD ADDR control:
+=================
+
+Type:
+-----
+Momentary key-type switch
+
+Depress to activate
+
+
+Function:
+---------
+The LOAD ADDR switch transfers the SWITCH REGISTER contents to the Bus Address Register (BAR) through a
+temporary location (TEMP) within the processor. This bus address, displayed in the ADDRESS REGISTER, provides
+an address for the console functions of EXAM, DEP, and START.
+
+Remarks:
+--------
+Odd bus address (bit 00 enabled) should not be entered from the console. Upper bytes at these odd addresses
+can be examined or deposited by using the word address (bit 00 not enabled). Refer to Paragraph 3.3.1.5.
+
+
+EXAM control:
+=============
+Type:
+-----
+Momentary key-type switch
+
+Depress to activate
+
+Function:
+---------
+The EXAM switch transfers the contents of the bus address (which is specified by the Bus Address Register) for
+DATA display. After use, the data appear on the DATA display and the address of the data is in the ADDRESS
+REGISTER.
+
+A LOAD ADDR operation pre-establishes the initial address; sequential addresses occur automatically.
+
+If the EXAM switch is depressed twice in succession, the contents of the next sequential bus address are
+displayed in DATA. This action is repeated each time EXAM is depressed provided no other switch is used
+between these steps.
+
+Whenever the LOAD ADDR or DEP switch is depressed, it destroys the incrementing sequence. The next time EXAM
+is used, it displays the current Bus Address Register address rather than the next sequential address.
+
+Remarks:
+--------
+Refer to Paragraph 3.3 for further discussion of address incrementation by the EXAM switch.
+
+
+
+CONT control:
+=================
+Type:
+-----
+Momentary key-type switch
+
+Depress to activate
+
+Function:
+---------
+Causes the processor to continue operation from the previous point at which it had stopped
+
+If the ENABLE/HALT switch is in the ENABLE mode, CONT returns bus control from the console to the processor
+and continues program operation.
+
+If the ENABLE/HALT switch is set to HALT, depressing the CONT key causes the processor to perform either a
+single instruction or a single bus cycle (dependent on position of the S-INST/S-CYCLE switch) and then stop.
+Bus control has been returned to the console and the CONT switch must be used to continue.
+
+
+Remarks:
+--------
+If program stops, depressing CONT provides a restart without power clear.
+
+
+ENABLE/HALT control:
+====================
+Type:
+-----
+2-position, key-type switch
+
+Function:
+---------
+Allows either the program or the console to control processor operation
+
+ENABLE position - permits the system to run in a normal manner. No console control requests (type dependent
+upon S-INST/S-CYCLE switch) are made. Without console control, all switches except ENABLE/HALT and the SWITCH
+REGISTER are disabled.
+
+HALT position - halts the processor and passes control to the console; with the S-INST/S-CYCLE switch in the
+S-CYCLE mode, console switches (except SWITCH REGISTER, CONT, and ENABLE/HALT) are disabled unless the machine
+is stepped to the end of an instruction. In the S-INST mode, the processor stops at the end of an instruction
+and all console switches are enabled.
+
+The HALT mode is used with the CONT switch to step the machine through programs and facilitate intermediate
+observations.
+
+When the START switch is activated in the HALT mode, a system clear is effected.
+
+
+Remarks:
+--------
+Continuous program control requires the ENABLE mode.
+
+The HALT mode is used to interrupt program control, perform single step operation, or clear the system.
+
+
+S-INST/S-CYCLE control:
+=======================
+
+Type:
+-----
+2-position, key-type switch
+
+Function:
+---------
+Allows the processor to step through program operation either one instruction or one bus cycle at a time. The
+user may note processor operation and contents of registers during major states or bus cycles of individual
+instructions.
+
+S-INST position - the processor halts after an instruction. This process is repeated each time the CONT key is
+depressed. Console switches (LOAD ADDR, EXAM, DEP) can be used when the processor halts.
+
+S-CYCLE position - The processor halts after a bus cycle. The process is repeated each time CONT is depressed.
+Console switches are inoperative unless the machine is stepped to the S-INST halt position. (Changing mode to
+S-INST and using CONT switch effects this.)
+
+
+Remarks:
+--------
+This switch is enabled by the ENABLE/HALT switch in HALT mode.
+
+S-INST: Control is transferred to the console by a console bus request (CBR), second highest priority and
+serviced at instruction end.
+
+S-CYCLE: Control is transferred to the console by a console nonprocessor request (CNPR), highest priority and
+serviced after a bus cycle.
+
+
+START control:
+=================
+Type:
+-----
+Momentary key-type switch
+
+Depress to activate
+
+Function:
+---------
+When ENABLE/HALT is set to ENABLE, depressing START provides a system dear operation and then begins processor
+operation. A LOAD ADDR operation pre-establishes the starting address.
+
+When ENABLE/HALT is set to HALT, depressing START provides a system clear (initialize) only. The processor
+does not start; the Bus Address Register is loaded from a temporary processor register (TEMP) which is usually
+pre-loaded by LOAD ADDR.
+
+This provides the only method of reading TEMP when it does not contain the LOAD ADDR value.
+
+
+DEP control:
+=================
+Type:
+-----
+Momentary key-type switch
+
+Lift to activate
+
+
+Function:
+---------
+The DEP switch transfers the contents of the console SWITCH REGISTER to the bus address (specified by the Bus
+Address Register). After use, the data appear on the DATA display and the address is in the ADDRESS REGISTER.
+A LOAD ADDR operation pre-establishes the initial address; sequential addresses occur automatically.
+
+If the DEP switch is raised twice in succession, the contents of the SWITCH REGISTER is deposited in the next
+sequential bus address location. This action is repeated each time DEP is raised provided no other switch is
+used between these steps. Whenever the LOAD ADDR or EXAM switch is depressed, it destroy the incrementing
+sequence. The next time DEP is used, it deposits the current address rather than the next sequential address.
+
+
+Remarks:
+--------
+Refer to Paragraph 3.3 for further discussion of address incrementation of locations by DEP switch.
+

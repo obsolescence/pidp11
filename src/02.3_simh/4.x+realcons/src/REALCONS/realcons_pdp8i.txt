@@ -1,0 +1,197 @@
+Maintenance Manual PDP-8I Volume I (Jul 1969, DEC-8I-HR1A-D).pdf
+
+CHAPTER 3 OPERATION
+
+3.1. CONTROLS AND INDICATORS
+
+3.1.1 Computer
+
+Figure 3-1 shows the location of the PDP-8/I controls and indicators. Although
+not marked on the front panel, register bits are numbered from left to right
+starting with zero. Therefore the most significant (leftmost) bit in the program
+counter (PC) is identified as PC00, and the least (rightmost) significant bit is
+identified as PC11. Table 3-1 contains a listing of the PDP-8/I controls and
+indicators within their functions. The PDP-8/I controls (except the power and
+panel lock switches) are of two types: butterfly switches, and momentary-contact
+switches. The butterfly switches are considered to be in their zero or off-state
+when the top half of the butterfly is fully depressed, and are considered to be
+in their one or on state when the bottom half of the butterfly is depressed. The
+momentary-contact switches include the Start, Exam, Load Add, Cont, Dep and Stop
+switches. These switches (except Dep) are actuated when the bottom half is fully
+depressed. The Dep switch is the reverse of the above. Indicators are considered
+to be in their on or one state when they are lit, and in their off or zero state
+when not lit.
+
+Table 3-1 Computer Controls And Indicators
+
+Control or Indicator    Function
+--------------------    --------------------------------------------------------
+Panel Lock key switch   When turned clockwise, this key-operated switch disables
+                        all controls except the Switch Register switches on the
+                        operator console. In this condition, inadvertent key
+                        operation cannot disturb the program. The program can,
+                        however, monitor the content of SR by execution of the
+                        OSR instruction.
+
+Power key switch        This key-operated switch controls application of primary
+                        power to the computer. When this switch is turned
+                        clockwise, primary power is applied.
+
+Start key               Starts the program by turning off the program interrupt
+                        circuits clearing the AC and L, setting the Fetch state,
+                        and starts the central processor.
+
+Load Add key            This key transfers the content of SR into PC, the content
+                        of INST FIELD° switches into IF, the content of the DATA
+                        FIELD° switches into DF, and clears the major state
+                        flip-flops.
+
+Dep key                 This key transfers the content of SR into MB and core memory
+                        at the address specified by the current content of PC.
+                        The major state flip-flops are cleared. The contents of
+                        PC is then incremented by one to allow storing of
+                        information in sequential core memory addresses by
+                        repeated operation of the Dep key.
+
+Exam key                This key transfers the content of core memory at the address
+                        specified by the content of PC, into the MB. The content
+                        of the PC is then incremented by one to allow
+                        examination of the contents of sequential core memory
+                        addresses by repeated operation of the Exam key. The
+                        major state flip-flop register cleared. The MA indicates
+                        the address of the data in the MB.
+
+Cont key                This key sets the RUN flip-flop to continue the program
+                        in the state and instruction designated by the lighted
+                        console indicators, at the address currently specified
+                        by the PC if key SS is not on.
+
+Stop key                Causes the RUN flip-flop to be cleared at the end of the
+                        instruction in progress at the time the key is pressed.
+
+Sing Step key           This key causes the RUN flip-flop to be cleared to disable
+                        the timing circuits at the end of one cycle of
+                        operation. Thereafter, repeated operation of the Cont
+                        key steps the program one cycle at a time so that the
+                        operator can observe the contents of registers in each
+                        major state.
+
+Sing Inst key           This key allows execution of one instruction. When the
+                        computer is started by pressing the Start or Cont key,
+                        the Sing Inst key causes the RUN flip-flop to be cleared
+                        at the end of the last cycle of the current instruction.
+                        Thereafter, repeated operation of the Cont key steps the
+                        program one instruction at a time.
+
+Switch Register         Provide a means of manually setting a 12-bit word into
+                        switches the machine. Load the content of this register
+                        into PC by pressing the Load Add key or load the content
+                        into the MB and core memory by the Dep key. Under
+                        program control, the OSR and LAS instructions can set
+                        the content of SR into AC.
+
+Data Field indicators   The indicators denote the content of the data field
+and switches°           register (DF), and the switches serve as an extension of
+                        SR to load DF by means of the Load Add key. DF
+                        determines the core memory field of data storage and
+                        retrieval.
+
+Inst Field indicators   The indicators denote the content of the instruction
+and switches°           field register (IF), and the switches serve as an extension
+                        of SR to load the IF by means of the Load Add key. IF
+                        determines the core memory field from which instructions
+                        are to be taken.
+
+° Activated only on systems containing the MC8/I, Memory Extension Control option.
+
+
+Register Indicators     Function
+-------------------     --------------------------------------------------------
+Program Counter         The PC contains the location of the next instruction to
+                        indicators be performed.
+
+Memory Address          Indicate the content of MA. Usually, the contents of MA
+indicators              denote the core memory address of the word currently or
+                        previously read or written. After operation either the
+                        Dep or Exam key, the contents of MA indicate the core
+                        memory address just examined or deposited into.
+
+Memory Buffer           Indicates the content of MB. Usually, the contents of MB
+                        indicators designate the word just written at the core
+                        memory address in MA.
+
+Accumulator             Indicates the content of AC.
+
+Link                    Indicates the content of L.
+
+Multiplier Quotient     Indicates the content of the multiplier quotient (MQ).
+                        MQ holds the multiplier at the beginning of a
+                        multiplication and holds the least-significant half of
+                        the product at the conclusion. It holds the
+                        least-significant half of the dividend at the start of
+                        division and holds the quotient at the conclusion.
+
+Major state indicators  Function
+----------------------  --------------------------------------------------------
+Fetch                   Indicates that the processor is currently performing or
+                        has performed a Fetch cycle.
+
+Execute                 Indicates that the processor is currently performing or
+                        has performed an Execute cycle.
+
+Defer                   Indicates that the processor is currently performing or
+                        has performed a Defer cycle.
+
+Word Count              Indicates that the processor is currently performing or
+                        has performed a Word Count cycle.
+
+Current Address         Indicates that the processor is currently performing or
+                        has performed a Current Address cycle.
+
+Break                   Indicates that the processor is currently performing or
+                        has performed a Break cycle.
+
+Miscellaneous indicators Function
+------------------------ -------------------------------------------------------
+Ion                     Indicates the 1 status of the INT.ENABLE flip-flop.
+                        When lit, the interrupt control is enabled for
+                        information exchange with an I/O device.
+
+Pause                   Indicates the 1 status of the PAUSE flip-flop when lit.
+                        The PAUSE flip-flop is set for 2.75 µs by any IOT
+                        instruction that requires generation of IOP pulses or by
+                        any EAE°° instruction that require shifting of
+                        information.
+
+Run                     Indicates the 1 status of the RUN flip-flop. When lit,
+                        the internal timing circuits are enabled and the machine
+                        performs instructions.
+
+°° Activated only on systems containing the KE8I, Extended Arithmetic Element option.
+
+
+Instruction indicators  Function
+----------------------  --------------------------------------------------------
+And                     Indicates that the processor is currently performing or
+                        has performed an And instruction.
+
+Tad                     Indicates that the processor is currently performing or
+                        has performed a Tad instruction.
+
+Isz                     Indicates that the processor is currently performing or
+                        has performed an Isz Instruction.
+
+Dca                     Indicates that the processor is currently performing or
+                        has performed a Dca Instruction.
+
+Jms                     Indicates that the processor is currently performing or
+                        has performed a Jms instruction.
+
+Jmp                     Indicates that the processor is currently performing or
+                        has performed a Jmp instruction.
+
+Iot                     Indicates that the processor is currently performing or
+                        has performed an Iot instruction.
+
+Opr                     Indicates that the processor is currently performing or
+                        has performed an Opr instruction.

@@ -1,0 +1,416 @@
+PDP-15 Systems Reference Manual (Aug 1969, DEC-15-BRZA-D) Chapter 10 Console.pdf
+
+Lamps from
+XVM system reference manual (Jun 1976, EK-15XVM-OP-001).pdf, Chapter 4
+
+
+CHAPTER 10: PDP-15 CONSOLE
+##########################
+
+
+The PDP-15 console (see Figure 10-1) provides access to, or control over,
+virtually every portion of the PDP-15. All registers, buses, and controls are
+multiplexed down a single console cable to display the equivalence of 24
+registers and 34 control functions. The console provides extensive control for
+real-time debugging and comprehensive man-machine interaction during checkout.
+
+
+INFORMATION/CONTROL SWITCHES
+============================
+
+The following two-position rocker switches are on the console keyboard:
+
+Number  Designation     Number  Designation
+18      Data            1       Repeat
+15      Address         1       Halt Loop
+1       Clock           1       Single Time
+1       Register Group  1       Single Step
+1       Parity Error    1       Single Instruction
+
+Data
+----
+These 18 switches may be read indirectly into the accumulator by the execution
+of a OAS (OR accumulator content with switches content) instruction in an
+operating program. Data may be inserted manually into the machine with these
+switches by means of the DEPOSIT and DEPOSIT NEXT keys.
+
+Address
+-------
+
+The memory address required by the START, READ IN, EXAMINE, and DEPOSIT keys is
+supplied by these switches. When one of these keys is depressed, the address
+given by the address switches is loaded into the MA (memory address) register
+and the key instruction is executed.
+
+Register Group
+--------------
+
+Selects which of two groups of 12 registers to be selected by the register
+select switch. In the OFF position the normal registers may be viewed while the
+ON position allows viewing of the maintenance registers. (See Register Select
+Switch).
+
+Clock
+------
+
+The ON position disables the real-time clock from issuing program interupt (PI)
+requests.
+
+Parity Error
+------------
+
+The ON position disables parity error program interrupts from occurring.
+
+Repeat
+------
+
+With this switch in the ON position, the processor will repeat the key function
+depressed by the operator at the rate specified by the repeat clock.
+
+Start - program execution will restart at the repeat speed after the machine halts.
+
+Execute - the instruction in the data switches will be executed at the repeat
+        clock rate.
+
+Continue - program execution will continue at the repeat speed after halting.
+
+Deposit: This, Next. Examine: This, Next - the Deposit, Deposit Next or Examine
+        Next function will be repeated.
+
+Depressing STOP or turning off the repeat switch will halt the repeat action.
+
+Halt Loop
+----------
+
+Used in conjunction with single time, step or instruction. Enabling the halt
+loop switch and any one of the other three will cause the processor to
+continually repeat the time, step or instruction into which it has been
+advanced.
+
+Single Time
+-----------
+
+Halts execution of the program after each time state has been completed.
+
+Single Step
+------------
+
+Halts execution of the program after each major state has been completed.
+
+Single Instruction
+------------------
+
+Halts program execution after each instruction has been completed.
+
+
+OPERATE CONTROL SWITCHES
+=========================
+
+The following momentary contact switches are on the console panel.
+
+Number  Designation     Number  Designation
+
+1       Start           1       Read In
+1       Execute         1       Deposit This
+1       Continue        1       Deposit Next
+1       Stop            1       Examine This
+1       Reset           1       Examine Next
+                        1       Protect
+
+Start
+------
+
+Initiates program execution at the location specified by the address switches.
+
+Execute
+-------
+
+Executes the instruction in the data switches and halts after execution.
+
+Continue
+--------
+
+Resumes program execution from the location specified by the program counter
+(PC). Also used to advance machine while in single time, step or instruction.
+
+Stop
+----
+
+Halts the processor after the completion of the present instruction.
+
+Reset
+-----
+
+Generates a power clear signal which clears all active registers and all control
+flip-flops except the program counter (PC).
+
+Read-in
+-------
+
+Initiates the read-in of paper tape punched in binary code (each set of three
+6-bit lines read from tape forms one 18-bit computer word). Storage of words
+read-in begins at the memory location specified by the ADDRESS switches. At the
+completion of tape read-in, the processor reads the last word entered and
+executes it.
+
+Deposit
+-------
+
+Deposits the contents of the data switches into the memory location specified by
+the address switches. After the transfer, the memory locations address is in the
+OA (operand address) register and the contents of the accumulator switches are
+in the MO (memory out) register.
+
+Deposit Next
+------------
+
+Deposits the contents of the data switches into the location given by OA ±1.
+This permits the loading of sequential memory locations without the need of
+loading the address each time.
+
+Examine
+-------
+
+Places the contents of the memory location specified by the address switches
+into the memory buffer register. The address is loaded into the OA (operand
+address) register.
+
+Examine Next
+------------
+
+Places the contents of the memory location specified by the OA + 1 (operand
+address plus 1) into the memory buffer register. Sequential memory locations may
+be examined using the Examine-Next switch.
+
+Protect
+-------
+
+Initiates the memory protect feature. When utilized, the protect feature
+prevents the read-in of data into the specified "protected" memory locations.
+
+
+SPECIAL SWITCHES
+================
+
+Register Select
+---------------
+
+The 12 position Register Select rotary switch can select the following registers
+for viewing in the REGISTER indicators (under control of the Register Group
+switch).
+
+Register Group Switch OFF:
+
+    AC      Accumulator
+    PC      Program Counter
+    OA      Operand Address
+    MQ      Multiplexer Quotient
+    L, SC   Priority Level/Step Counter
+    XR      Index Register
+    LR      Limit Register
+    EAE     EAE
+    DSR     Data Storage Register
+    IOB     I/O Bus
+    STA     I/O Status
+    MO      Memory Out
+
+Register Group Switch ON:
+
+    A BU    A Bus
+    B BU    B Bus
+    C BU    C Bus
+    SFT     Shift Bus
+    IOA     I/O Address
+    SUM     Sum Bus
+    MI      Maintenance I
+    M2      Maintenance II
+    MDL     Memory Data Lines
+    MA      Memory Address
+    MB      Memory Buffer
+    MST     Memory Status
+
+Maintenance 1 and 2
+---------------------
+
+Two positions of the Register Select switch MI and M2, in conjunction with the
+Single Time switch, provide a visual display of active control and gating signal
+levels. For a given instruction, as the processor is stepped through the time
+states of each major state, the REGISTER indicators display a predictable
+sequence of enabling and strobing signals. The visual display relieves personnel
+of a large portion of the signal tracing normally associated with the
+maintenance of electronic systems. The sequences or maintenance "status words",
+are supplied as part of the system maintenance data.
+
+Power/Repeat Rate
+-----------------
+
+A variable-pot/switch provides the POWER ON/ OFF control at one end of its
+rotation and variable repeat speed (approximately 1 Hz to 10 kHz) over the
+remainder of its rotation.
+
+
+INDICATORS
+==========
+
+The console indicator panel displays the following:
+
+    Memory Buffer (18 bits)
+    Register (18 bits)
+        (The "register" indicators display the content of the register, bus or
+        status word that is selected by the setting of the Register Select
+        switch.)
+    Link
+    Power
+    Run
+    Instruction Register
+        IR 0-3
+        Defer
+        Index
+    Extended Enable
+    Clock Enable
+    Parity Error
+    Protect
+    DCH Active
+    API States Active, 0-7
+    API Enable
+    PI Active
+    PI Enable
+    Index Mode
+    Major States
+        Fetch
+        Increment
+        Defer
+        EAE
+        Execute
+    Time States
+        1
+        2
+        3
+
+
+#############################################################
+
+XVM SWITCHES
+....
+
+
+STOP is the only switch active while the machine is running. If, at any time,
+the machine must be reset while the RUN light is on, the RESET and STOP switches
+should be pressed simultaneously. This is an unconditional reset procedure that
+should be used with caution, beacuse data can be lost.
+
+
+
+USER
+----
+When set (back half of switch pressed), pressing START causes the system to
+start in User mode.
+
+
+BANK MODE
+----------
+When set (back half of switch pressed), pressing START causes the system to
+start in Bank mode permitting direct addressing of 8,192 (17777o) word of core
+memory. When switch is not set (front half pressed), pressing START causes the
+system to start in Page mode permitting direct addressing of 4,096 (7777o) words
+of core memory.
+
+.....
+
+
+XVM INDICATORS
+----------------
+
+POWER
+-----
+Indicates that the power supply voltages are at operating levels.
+
+RUN
+---
+Indicates that program execution is in progress.
+
+G MODE
+-------
+Indicates that system is in GM 1,2 or 3.
+
+CLOCK
+-----
+Indicates that the real-time clock facility is enabled.
+
+IOTD
+----
+Indicates that IOTs are trapped in user mode.
+
+USER
+-----
+Indicates that system is in user mode.
+
+DCH ACTIVE
+----------
+Lights when the data channel is beeing serviced, i.e., data is being transferred
+between core memory and a device via the I/O bus.
+
+API ENABLE
+-----------
+Lights when the automatic priority interrupt system is activated.
+
+API STATES ACTIVE
+-----------------
+Indicates  API level(s) active.
+0-3 Hardware levels.
+4-7 Software levels.
+
+MAJOR STATES
+------------
+FETCH   Indicates that the processor is in the Fetch state.
+INC   Indicates that the processor is in the Increment state.
+DEFER  Indicates that the processor is in the Defer state.
+EAE  Indicates that the processor is in the EAE (extended arithmetic element) instruction state.
+EXEC  Indicates that the processor is in the Execute state.
+
+TIME STATES 1,2,3
+-----------------
+Indicates the processor time states. When all time states are off, machine is in
+time state 2A of the Add instruction.
+
+PI ACTIVE
+---------
+Indicates that a program interrupt is pending service.
+
+PI ENABLE
+---------
+Indicates that the program interrupt system is enabled (under program control).
+
+MODE INDEX
+----------
+Indicates that the processor is operating in Page mode and therefore indexing
+can be accomplished.
+
+LINK
+----
+Display state of Link bit.
+
+INSTRUCTION
+-----------
+Displays contents of 6-bit program word instruction field.
+0-3 Displays the instruction operation code.
+DEFER Indicates that the operand is indirectly addressed.
+INDEX Indicates that the operand address is indexed when in Page mode or that
+    the upper 4K (of an 8K bank) is addressed when in Bank mode.
+
+MEMORY BUFFER 00-17
+-------------------
+Displays the content of the currently addressed memory address.
+
+REGISTER 00-17
+--------------
+Used with the setting of the REG GROUP and Register Select switches to display:
+a. Data in a register
+b. Data on a bus
+c. Coontrol signal levels
+
+
+
+
+
+
