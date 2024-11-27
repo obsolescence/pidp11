@@ -2,21 +2,56 @@
 #
 #
 # install script for PiDP-11
-# v20231218
+# v20241127
 #
 PATH=/usr/sbin:/usr/bin:/sbin:/bin
 
-apt-get update
-#Install SDL2, optionally used for PDP-11 graphics terminal emulation
-apt-get install libsdl2-dev
-#Install pcap, optionally used when PDP-11 networking is enabled
-apt-get install libpcap-dev
-#Install readline, used for command-line editing in simh
-apt-get install libreadline-dev
-# Install screen
-apt-get install screen
-# Install newer RPC system
-apt-get install libtirpc-dev
+# check this script is NOT run as root
+if [ "$(whoami)" == "root" ]; then
+    echo script must NOT be run as root
+    exit 1
+fi
+
+echo
+echo
+echo PiDP-11 install script
+echo ======================
+echo
+echo The script can be re-run at any time to change things. Re-running the install
+echo script and answering \'n\' to questions will leave those things unchanged.
+echo You can recompile from source, but it is easier to just install the precompiled
+echo binaries. 
+echo
+echo Too Long, Didn\'t Read?
+echo Just say Yes to everything.
+echo
+echo
+
+# Install required dependencies
+# =============================================================================
+while true; do
+    echo
+    read -p "Install the required dependencies? " prxn
+    case $prxn in
+        [Yy]* ) 
+		sudo apt update
+		#Install SDL2, optionally used for PDP-11 graphics terminal emulation
+		sudo apt install -y libsdl2-dev
+		#Install pcap, optionally used when PDP-11 networking is enabled
+		sudo apt install -y libpcap-dev
+		#Install readline, used for command-line editing in simh
+		sudo apt install -y libreadline-dev
+		# Install screen
+		sudo apt install -y screen
+		# Install newer RPC system
+		sudo apt install -y libtirpc-dev
+	    break;;
+        [Nn]* ) 
+	    echo Skipped install of dependencies - if not installed already, pidp11 will not work
+            break;;
+        * ) echo "Please answer Y or N.";;
+    esac
+done
 
 
 # 20231218 - deal with user choice of precompiled 64/32 bit or compile from src
@@ -25,22 +60,27 @@ pidpath=/opt/pidp11
 
 while true; do
     echo
-    read -p "Install precompiled (3)2 bit, precompiled (6)4 bit binaries or (C)ompile from source? " prxn
+    read -p "(Y) to install precompiled binaries, or (C)ompile from source, or (S)kip? " prxn
     case $prxn in
-        [3]* ) 
-            subdir=backup32bit-binaries
+        [Yy]* ) 
+            # Query the system architecture
+            ARCH=$(dpkg-architecture --query DEB_HOST_ARCH)
+	    echo
+	    if [ "$ARCH" == "arm64" ]; then
+                subdir=backup64bit-binaries
+	        echo "This Raspberry Pi is running a 64-bit operating system."
+            else
+                subdir=backup32bit-binaries
+	        echo "This Raspberry Pi is running a 32-bit operating system."
+            fi
+            echo
             echo Copying binaries from /opt/pidp11/bin/$subdir
             sudo cp $pidpath/bin/$subdir/pdp11_realcons $pidpath/src/02.3_simh/4.x+realcons/bin-rpi/pdp11_realcons
             sudo cp $pidpath/bin/$subdir/scansw $pidpath/src/11_pidp_server/scanswitch/scansw
             sudo cp $pidpath/bin/$subdir/pidp1170_blinkenlightd $pidpath/src/11_pidp_server/pidp11/bin-rpi/pidp1170_blinkenlightd
             sudo cp $pidpath/bin/$subdir/vt52 $pidpath/bin/
-            break;;
-        [6]* ) 
-            subdir=backup64bit-binaries
-            sudo cp $pidpath/bin/$subdir/pdp11_realcons $pidpath/src/02.3_simh/4.x+realcons/bin-rpi/pdp11_realcons
-            sudo cp $pidpath/bin/$subdir/scansw $pidpath/src/11_pidp_server/scanswitch/scansw
-            sudo cp $pidpath/bin/$subdir/pidp1170_blinkenlightd $pidpath/src/11_pidp_server/pidp11/bin-rpi/pidp1170_blinkenlightd
-            sudo cp $pidpath/bin/$subdir/vt52 $pidpath/bin/
+	    echo 
+	    echo Copied precompiled binaries into place.
             break;;
         [Cc]* ) 
             sudo rm $pidpath/src/02.3_simh/4.x+realcons/bin-rpi/pdp11_realcons
@@ -48,73 +88,95 @@ while true; do
             sudo rm $pidpath/src/11_pidp_server/pidp11/bin-rpi/pidp1170_blinkenlightd
             sudo $pidpath/src/makeclient.sh
             sudo $pidpath/src/makeserver.sh
+	    echo
+            echo recompiled PiDP-11 binaries from source.
+	    break;;
+        [Ss]* ) 
+            echo Skipped putting new binaries in place, things left untouched. 
+	    echo Rerun install if PiDP-11 does not work!
             break;;
-        * ) echo "Please answer 3,6 or C.";;
+        * ) echo "Please answer Y, C, or S.";;
     esac
 done
-echo $prxn - Done.
 
+
+# Install the pidp11 software
 # =============================================================================
+while true; do
+    echo
+    read -p "Install PiDP-11 package into OS? " prxn
+    case $prxn in
+        [Yy]* ) 
+		# Run xhost + at GUI start to allow access for vt11. 
+		# Proof entire setup needs redoing.
+		# (this will not work on Wayland, just X11)
+		echo
+		echo
+		echo NOTE: if you want to use RT-11 VT graphics, then:
+		echo make sure to run sudo raspi-config, and enable X11 instead of Wayland.
+		echo ...details: in raspi-config, choose Advanced Options-Wayland-X11
+		echo
+		echo Alternatively, RT-11 graphics under Wayland require you to restart the PDP-11
+		echo simulator manually with pidp11.sh in the pidp11 bin directory
+		echo
+		echo In a hurry? Leave this for later, not critical.
+		echo
+		echo
+		new_config_line="xhost +"
+		config_file="/etc/xdg/lxsession/LXDE-pi/autostart"
+		# Check if the line already exists in the config file
+		if ! grep -qF "$new_config_line" "$config_file"; then
+		    # If the line doesn't exist, append it to the file
+		    sudo echo "$new_config_line" >> "$config_file"
+		    echo "Line added to $config_file"
+		else
+		    echo "OK, Line already exists in $config_file"
+		fi
 
 
-# Run xhost + at GUI start to allow access for vt11. Proof entire setup needs redoing.
-# (this will not work on Wayland, just X11)
-echo
-echo
-echo NOTE: if you want to use RT-11 VT graphics, then:
-echo make sure to run 'sudo raspi-config', and enable X11 instead of Wayland.
-echo ...details: in raspi-config, choose Advanced Options->Wayland->X11, then Finish to reboot
-echo
-echo Alternatively, RT-11 graphics under Wayland require you to restart the PDP-11
-echo simulator manually with pidp11.sh in the pidp11 bin directory
-echo
-echo In a hurry? Leave this for later, not critical.
-echo
-echo
-new_config_line="xhost +"
-config_file="/etc/xdg/lxsession/LXDE-pi/autostart"
-# Check if the line already exists in the config file
-if ! grep -qF "$new_config_line" "$config_file"; then
-    # If the line doesn't exist, append it to the file
-    sudo echo "$new_config_line" >> "$config_file"
-    echo "Line added to $config_file"
-else
-    echo "Line already exists in $config_file"
-fi
+		# Set up pidp11 init script
+		if [ ! -x /opt/pidp11/etc/rc.pidp11 ]; then
+			echo pidp11 not found in /opt/pidp11. Abort.
+			exit 1
+		else
+			sudo ln -s /opt/pidp11/etc/rc.pidp11 /etc/init.d/pidp11
+			sudo update-rc.d pidp11 defaults
+			echo pidp11 added to init.d
+		fi
 
 
-# Set up pidp11 init script, provided pidp11 is installed in /opt/pidp11
-if [ ! -x /opt/pidp11/etc/rc.pidp11 ]; then
-	echo pidp11 not found in /opt/pidp11. Abort.
-	exit 1
-else
-	ln -s /opt/pidp11/etc/rc.pidp11 /etc/init.d/pidp11
-	update-rc.d pidp11 defaults
-fi
+		# setup 'pdp.sh' (script to return to screen with pidp11) 
+		# in home directory if it is not there yet
+		test ! -L /home/pi/pdp.sh && ln -s /opt/pidp11/etc/pdp.sh /home/pi/pdp.sh
+		# easier to use - just put a pdp11 command into /usr/local
+		sudo ln -f -s /opt/pidp11/etc/pdp.sh /usr/local/bin/pdp11
 
+		# add pdp.sh to the end of pi's .profile to let a new login 
+		# grab the terminal automatically
+		#   first, make backup .foo copy...
+		test ! -f /home/pi/profile.foo && cp -p /home/pi/.profile /home/pi/profile.foo
+		#   add the line to .profile if not there yet
+		if grep -xq "/home/pi/pdp.sh" /home/pi/.profile
+		then
+			echo .profile already done, OK.
+		else
+			sed -e "\$a/home/pi/pdp.sh" -i /home/pi/.profile
+		fi
 
-# setup 'pdp.sh' (script to return to screen with pidp11) in home directory if it is not there yet
-test ! -L /home/pi/pdp.sh && ln -s /opt/pidp11/etc/pdp.sh /home/pi/pdp.sh
-
-
-# add pdp.sh to the end of pi's .profile
-#   first, make backup .foo copy...
-test ! -f /home/pi/profile.foo && cp -p /home/pi/.profile /home/pi/profile.foo
-#   add the line to .profile if not there yet
-if grep -xq "/home/pi/pdp.sh" /home/pi/.profile
-then
-	echo .profile already done, OK.
-else
-	sed -e "\$a/home/pi/pdp.sh" -i /home/pi/.profile
-fi
+	    break;;
+        [Nn]* ) 
+	    echo Skipped software install
+            break;;
+        * ) echo "Please answer Y or N.";;
+    esac
+done
 
 
 # 20231218 - install all operating systems, if desired
 # =============================================================================
-
 while true; do
     echo
-    read -p "Download and install operating systems? " prxn
+    read -p "Download and install the PDP-11 operating systems? " prxn
     case $prxn in
         [Yy]* ) 
 	    cd /opt/pidp11
@@ -123,15 +185,15 @@ while true; do
             sudo tar -xvf systems.tar
 	    break;;
         [Nn]* ) 
-	    echo operating systems not added at your request. You can do it later.
+	    echo PDP-11 operating systems not added at your request. You can do it later.
             break;;
         * ) echo "Please answer Y or N.";;
     esac
 done
 
+
 # 20241126 Add VT52 desktop icon
 # =============================================================================
-
 while true; do
     echo
     read -p "Add VT-52 desktop icon and desktop settings? " prxn
@@ -143,29 +205,31 @@ while true; do
             config_file="/home/pi/.config/libfm/libfm.conf"
             # Create the directory if it doesn't exist
             mkdir -p "$(dirname "$config_file")"
-            # Add or update the execution policy setting
+            # Add or update the quick_exec setting
             if grep -q "^\s*quick_exec=" "$config_file" 2>/dev/null; then
-                # Update existing setting
+                echo ...Update existing setting...
                 sed -i 's/^\s*quick_exec=.*/quick_exec=1/' "$config_file"
             else
-                # Add the setting if it doesn't exist
+                echo ...Adding the config file, it does not exist yet
                 echo -e "[config]\nquick_exec=1" >> "$config_file"
             fi
 	    
 	    # wallpaper
-	    #sudo -u pi dbus-launch pcmanfm --set-wallpaper /opt/pidp11/install/wallpaper.jpeg --wallpaper-mode=fit
-            config_file="/home/pi/.config/pcmanfm/LXDE-pi/desktop-items-HDMI-A-1.conf"
+	    echo $XDG_RUNTIME_DIR
+	    echo ==========================
+	    pcmanfm --set-wallpaper /opt/pidp11/install/wallpaper.jpeg --wallpaper-mode=fit
+
+            #config_file="/home/pi/.config/pcmanfm/LXDE-pi/desktop-items-HDMI-A-1.conf"
             # Create the directory if it doesn't exist
-            mkdir -p "$(dirname "$config_file")"
+            #mkdir -p "$(dirname "$config_file")"
             # Add or update the execution policy setting
-            if grep -q "^\s*wallpaper=" "$config_file" 2>/dev/null; then
+            #if grep -q "^\s*wallpaper=" "$config_file" 2>/dev/null; then
                 # Update existing setting
-                sed -i 's/^\s*wallpaper=.*/wallpaper=\/opt\/pidp11\/install\/wallpaper.jpeg/' "$config_file"
-            else
+                #sed -i 's/^\s*wallpaper=.*/wallpaper=\/opt\/pidp11\/install\/wallpaper.jpeg/' "$config_file"
+            #else
                 # Add the setting if it doesn't exist
-                echo -e "[config]\ndesktop-items-HDMI-A-1.conf" >> "$config_file"
-            fi
-            
+                #BAD!!! echo -e "[config]\ndesktop-items-HDMI-A-1.conf" >> "$config_file"
+            #fi
 	    
 	    echo "Desktop updated."
 	    break;;
@@ -176,5 +240,6 @@ while true; do
         * ) echo "Please answer Y or N.";;
     esac
 done
-echo $prxn - Done. Please do a sudo reboot
+echo
+echo Done. Please do a sudo reboot and the front panel will come to life.
 
