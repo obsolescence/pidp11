@@ -1,0 +1,73 @@
+;detach all
+;reset all
+set cpu 11/70
+set cpu 4096
+;set cpu idle
+
+set xu enable
+set xu type=delua
+set xu mac=aa:00:04:00:ea:04
+att xu en0
+set xu throttle
+;set xu address=17774510
+;set xu type-delua
+;set xu mac=aa:00:04:00:1e:78
+;attach xu eth0
+sho xu
+
+; under SimH 4, "throttling" results in a disturbed "idle pattern"
+;set nothrottle
+set noidle
+set throttle 50%
+;set console telnet=10000
+sho cpu
+
+set tm disable
+set hk disable
+set rp disable
+
+set rq0 rauser=1024
+;set rq0 autosize
+att rq0 pidp.dsk
+;attach rq0 PiDP11_DU0.dsk
+set rq1 autosize
+;enable this line when you want to use the DECUS disk image collection
+;which comes on a separate 1.7GB disk:
+;attach rq1 PiDP11_DU1.dsk
+set rq2 autosize
+set rq3 autosize
+
+;set tq tu81
+set tq0 write
+att -f tq0 e11 pidp.tap
+
+set clk 50
+
+set dz enable
+set dz lines=8
+att dz 42,speed=*32
+;set dz address=17760030
+;set dz vec=330
+attach dz 10001
+sho dz
+
+
+; connect to panel
+set realcons host=localhost
+set realcons panel=11/70
+; We're running on a desktop PC with connection to localhost: max speed!
+set realcons interval=1
+set realcons connected
+;set realcons debug
+;show realcons
+
+echo
+echo
+echo "Johnny Bilquist's RSX-11MPlus v4.6 with BQTCP/IP"
+echo
+echo "Please visit http://mim.stupi.net/pidp.htm"
+echo "type 'boot rq0' to boot from disk, or 'boot tq0' to boot from tape"
+echo "please configure this boot script to your liking, using"
+echo "  sudo nano /opt/pidp11/systems/rsx11mp46/boot.ini"
+echo
+;boot rq0
