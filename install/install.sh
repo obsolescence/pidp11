@@ -219,18 +219,15 @@ while true; do
 	    echo ==========================
 	    pcmanfm --set-wallpaper /opt/pidp11/install/wallpaper.jpeg --wallpaper-mode=fit
 
-            #config_file="/home/pi/.config/pcmanfm/LXDE-pi/desktop-items-HDMI-A-1.conf"
-            # Create the directory if it doesn't exist
-            #mkdir -p "$(dirname "$config_file")"
-            # Add or update the execution policy setting
-            #if grep -q "^\s*wallpaper=" "$config_file" 2>/dev/null; then
-                # Update existing setting
-                #sed -i 's/^\s*wallpaper=.*/wallpaper=\/opt\/pidp11\/install\/wallpaper.jpeg/' "$config_file"
-            #else
-                # Add the setting if it doesn't exist
-                #BAD!!! echo -e "[config]\ndesktop-items-HDMI-A-1.conf" >> "$config_file"
-            #fi
-	    
+            echo
+	    echo "Installing Teletype font..."
+	    echo
+	    mkdir ~/.fonts
+            cp /opt/pidp11/install/TTY33MAlc-Book.ttf ~/.fonts/
+	    fc-cache -v -f
+
+
+
 	    echo "Desktop updated."
 	    break;;
 
@@ -241,5 +238,183 @@ while true; do
     esac
 done
 echo
+echo Desktop update done.
+
+
+
+
+# 20241126 Add Chase Covello's updated 2.11BSD straight from his github
+# =============================================================================
+while true; do
+    echo
+    read -p "2024 update: Add Chase Covello's updated 2.11BSD ? " prxn
+    case $prxn in
+        [Yy]* ) 
+
+
+
+		# Directory path
+		dir="/opt/pidp11/systems/211bsd+"
+
+		echo "Checking if xz-utils is installed for decompression:"
+		sudo apt install xz-utils
+
+		# Check if the directory for Chase Covello's 211BSD already exists
+		if [ -d "$dir" ]; then
+		    echo "You already have the 211BSD+ directory!"
+		    echo "boot.ini and the disk image in $dir will be updated."
+		else
+		    echo
+		    echo "Creating $dir..."
+		    sudo mkdir "$dir"
+		    echo
+		fi
+
+	        echo "Downloading from github.com/chasecovello/211bsd-pidp11"
+	        echo "please visit that page for more information"
+	        echo
+	        sudo wget -O "${dir}/boot.ini" https://raw.githubusercontent.com/chasecovello/211bsd-pidp11/refs/heads/master/boot.ini 
+		sudo wget -O "${dir}/2.11BSD_rq.dsk.xz" https://github.com/chasecovello/211bsd-pidp11/raw/refs/heads/master/2.11BSD_rq.dsk.xz
+		echo
+		echo Decompressing...
+		echo
+		cd "${dir}"
+		sudo unxz -f ./2.11BSD_rq.dsk.xz
+		echo
+		echo Modifying boot.ini by commenting out the icr device for bmp280 i2c
+		echo
+	        sudo sed -i 's/^attach icr icr.txt$/;attach icr icr.txt/' "${dir}/boot.ini"
+		echo
+		echo Modifying boot.ini by enabling the line set realcons connected:
+                sudo sed -i 's/^;set realcons connected$/set realcons connected/' "${dir}/boot.ini"
+		echo
+		echo ...Done. Set SR switches to octal 0211 to boot into this newly installed 211.BSD
+		echo    Do not forget to visit github.com/chasecovello/211bsd-pidp11 
+		echo    to find out about all the good stuff on this update!
+		echo
+		echo
+
+		# Insert a new line for the OS in the boot options selections file
+		file="/opt/pidp11/systems/selections"
+		new_line="0211"$'\t'"211bsd+"
+		echo
+		echo
+		# Check if the file exists, create it if it doesn't
+		if [ ! -f "$file" ]; then
+		    echo "$file does not exist. That's fatal - check your /opt/pidp11 directory..."
+		    exit 1
+		fi
+
+		# Add the new line to selections and sort it alphabetically
+		echo "...Adding boot option $new_line to selections menu"
+		#sudo sh -c 'cat "$file" | sort | uniq > temp_file && mv temp_file "$file"'
+		#sudo sh -c "{ cat \"$file\"; echo \"$new_line\" } | sort | uniq > temp_file && mv temp_file \"$file\""
+		sudo sh -c "{ cat \"$file\"; echo \"$new_line\"; } | sort | uniq > temp_file && mv temp_file \"$file\""
+
+		echo "Line added. Reboot with SR switches set to 0211 to boot the new system."
+
+
+
+	    break;;
+
+	[Nn]* ) 
+	    echo Skipped. You can do it later by re-running this install script.
+            break;;
+        * ) echo "Please answer Y or N.";;
+    esac
+done
+echo
 echo Done. Please do a sudo reboot and the front panel will come to life.
+
+
+
+
+
+
+# 20241126 Add Johnny Bilquist's latest RSX-11MPlus with BQTC/IP
+# =============================================================================
+while true; do
+    echo
+    read -p "2024: Add Johnny Bilquist's latest RSX-11MPlus with BQTC/IP? " prxn
+    case $prxn in
+        [Yy]* ) 
+
+
+
+		# Directory path
+		dir="/opt/pidp11/systems/rsx11bq"
+		# Check if the directory for Johnny Bilquists RSX-11 already exists
+		if [ -d "$dir" ]; then
+		    echo "You already have the Bilquist RSX11BQ directory!"
+		    echo "Only the disk image in $dir will be updated."
+		else
+		    echo
+		    echo "Creating $dir..."
+		    sudo mkdir "$dir"
+		    echo
+		    echo "Copying boot.ini from install/boot.ini.bilquist directory..."
+		    sudo cp /opt/pidp11/install/boot.ini.bilquist "${dir}/boot.ini"
+		fi
+
+		echo
+		echo "Getting files from ftp://ftp.dfupdate.se/pub/pdp11/rsx/pidp/"
+		echo "please visit http://mim.stupi.net/pidp.htm for more information"
+		echo
+		echo "Files will be downloaded by anonymous ftp from dfupdate.se."
+		echo "As a courtesy, leave your email address (that is ftp etiquette)"
+		echo
+		read -p "Enter your email address: " email
+		ftp_url="ftp://ftp.dfupdate.se/pub/pdp11/rsx/pidp"
+		files=("pidp.dsk.gz" "pidp.tap.gz")
+		cd ${dir}
+		for file in "${files[@]}"; do
+		    echo
+		    echo "Downloading $file..."
+		    sudo wget --user="anonymous" --password="$email" -O ${file} "${ftp_url}/${file}"
+		    echo
+		    echo Decompressing...
+		    echo
+		    sudo gunzip -f "${file}" 
+		done
+
+		echo
+		echo
+		echo ...Done. Set SR switches to octal 2024 to boot this newly installed RSX.
+		echo    Do not forget to visit http://mim.stupi.net/pidp.htm 
+		echo    to find out about all the good stuff in this update!
+		echo
+		echo
+
+		# Insert a new line for the OS in the boot options selections file
+		file="/opt/pidp11/systems/selections"
+		new_line="2024"$'\t'"rsx11bq"
+		echo
+		echo
+		# Check if the selections file exists
+		if [ ! -f "$file" ]; then
+		    echo "$file does not exist. That's fatal - check your /opt/pidp11 directory..."
+		    exit 1
+		fi
+
+		# Add the new line to selections and sort it alphabetically
+		echo "...Adding boot option $new_line to selections menu"
+		sudo sh -c "{ cat \"$file\"; echo \"$new_line\"; } | sort | uniq > temp_file && mv temp_file \"$file\""
+
+		echo "Line added. Reboot with SR switches set to 2024 to boot the new system."
+
+
+
+	    break;;
+
+	[Nn]* ) 
+	    echo Skipped. You can do it later by re-running this install script.
+            break;;
+        * ) echo "Please answer Y or N.";;
+    esac
+done
+echo
+echo Done. Please do a sudo reboot and the front panel will come to life.
+
+
+
 

@@ -1,7 +1,7 @@
 [Desktop Entry]
 Name=VT-52 for PiDP-11
 Comment=VT-52 for PiDP-11
-Exec=/opt/pidp11/bin/vt52 ssh pi@localhost
+Exec=/opt/pidp11/bin/vt52 bash /home/pi/pdp.sh
 Terminal=false
 Type=Application
 Icon=/opt/pidp11/install/vt52.svg
