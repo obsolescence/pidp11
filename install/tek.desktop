@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=Teletype
+Comment=Teletype for PiDP-11
+Exec=/opt/pidp11/bin/sty bash /home/pi/pdp.sh
+Terminal=false
+Type=Application
+Icon=/opt/pidp11/install/teletype.svg
+Categories=X-PDP11;
+StartupNotify=false

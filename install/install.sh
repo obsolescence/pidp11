@@ -79,6 +79,8 @@ while true; do
             sudo cp $pidpath/bin/$subdir/scansw $pidpath/src/11_pidp_server/scanswitch/scansw
             sudo cp $pidpath/bin/$subdir/pidp1170_blinkenlightd $pidpath/src/11_pidp_server/pidp11/bin-rpi/pidp1170_blinkenlightd
             sudo cp $pidpath/bin/$subdir/vt52 $pidpath/bin/
+            sudo cp $pidpath/bin/$subdir/sty $pidpath/bin/
+            sudo cp $pidpath/bin/$subdir/tek4010 $pidpath/bin/
 	    echo 
 	    echo Copied precompiled binaries into place.
             break;;
