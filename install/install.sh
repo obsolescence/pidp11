@@ -4,11 +4,16 @@
 # install script for PiDP-11
 # v20241127
 #
-PATH=/usr/sbin:/usr/bin:/sbin:/bin
+#PATH=/usr/sbin:/usr/bin:/sbin:/bin
 
 # check this script is NOT run as root
 if [ "$(whoami)" == "root" ]; then
     echo script must NOT be run as root
+    exit 1
+fi
+
+if [ ! -d "/opt/pidp11" ]; then
+    echo clone git repo into /opt/
     exit 1
 fi
 
@@ -26,6 +31,28 @@ echo Too Long, Didn\'t Read?
 echo Just say Yes to everything.
 echo
 echo
+
+
+# Set required access privileges to pidp11 simulator
+# =============================================================================
+
+read -p "Set required access privileges to pidp11 simulator? " yn
+case $yn in
+    [Yy]* )
+	    # make sure that the directory does not have root ownership
+	    # (in case the user did a simple git clone instead of 
+	    #  sudo -u pi git clone...)
+	    myusername=$(whoami)
+	    mygroup=$(id -g -n)
+	    sudo chown -R $myusername:$mygroup /opt/pidp11
+	    # make sure pidp11 simulator has the right privileges
+	    # to access GPIO with root privileges:
+            sudo chmod +s /opt/pidp11/src/11_pidp_server/scanswitch/scansw
+            sudo chmod +s /opt/pidp11/src/11_pidp_server/pidp11/bin-rpi/pidp1170_blinkenlightd
+	    ;;
+    [Nn]* ) ;;
+        * ) echo "Please answer yes or no.";;
+esac
 
 # Install required dependencies
 # =============================================================================
@@ -45,11 +72,6 @@ while true; do
 		sudo apt install -y screen
 		# Install newer RPC system
 		sudo apt install -y libtirpc-dev
-		# enable rpcbind
-		sudo systemctl enable rpcbind
-		sudo systemctl start rpcbind
-		echo please check that rpcbind is up:
-		sudo systemctl status rpcbind
 
 	    break;;
         [Nn]* ) 
@@ -60,7 +82,7 @@ while true; do
 done
 
 
-# 20231218 - deal with user choice of precompiled 64/32 bit or compile from src
+# Deal with user choice of precompiled 64/32 bit or compile from src
 # =============================================================================
 pidpath=/opt/pidp11
 
@@ -75,6 +97,9 @@ while true; do
 	    if [ "$ARCH" == "arm64" ]; then
                 subdir=backup64bit-binaries
 	        echo "This Raspberry Pi is running a 64-bit operating system."
+	    elif [ "$ARCH" == "amd64" ]; then
+                subdir=backupAmd64-binaries
+	        echo "This is a amd64 Linux system, not a Raspberry Pi - OK, installing."
             else
                 subdir=backup32bit-binaries
 	        echo "This Raspberry Pi is running a 32-bit operating system."
@@ -115,62 +140,44 @@ while true; do
     read -p "Install PiDP-11 package into OS? " prxn
     case $prxn in
         [Yy]* ) 
-		# Run xhost + at GUI start to allow access for vt11. 
-		# Proof entire setup needs redoing.
-		# (this will not work on Wayland, just X11)
-		echo
-		echo
-		echo NOTE: if you want to use RT-11 VT graphics, then:
-		echo make sure to run sudo raspi-config, and enable X11 instead of Wayland.
-		echo ...details: in raspi-config, choose Advanced Options-Wayland-X11
-		echo
-		echo Alternatively, RT-11 graphics under Wayland require you to restart the PDP-11
-		echo simulator manually with pidp11.sh in the pidp11 bin directory
-		echo
-		echo In a hurry? Leave this for later, not critical.
-		echo
-		echo
-		new_config_line="xhost +"
-		config_file="/etc/xdg/lxsession/LXDE-pi/autostart"
-		# Check if the line already exists in the config file
-		if ! grep -qF "$new_config_line" "$config_file"; then
-		    # If the line doesn't exist, append it to the file
-		    sudo echo "$new_config_line" >> "$config_file"
-		    echo "Line added to $config_file"
-		else
-		    echo "OK, Line already exists in $config_file"
-		fi
+	    # setup 'pdp.sh' (script to return to screen with pidp11) 
+	    # in home directory if it is not there yet
+	    test ! -L /home/pi/pdp.sh && ln -s /opt/pidp11/etc/pdp.sh /home/pi/pdp.sh
+	    # easier to use - just put a pdp11 command into /usr/local
+	    sudo ln -f -s /opt/pidp11/etc/pdp.sh /usr/local/bin/pdp11
+	    # the pdp11control script into /usr/local:
+	    sudo ln -i -s /opt/pidp11/bin/pdp11control.sh /usr/local/bin/pdp11control
 
+	    if [ "$ARCH" != "amd64" ]; then
+		    echo skipping autostart and rpcbind, because this is not a Raspberry Pi
+		    echo Not a problem: start manually by typing 
+		    echo pdp11control start x
+		    echo ...where x is the OS number normally set on the front panel.
+		    echo 
+		    echo Access the PDP-11 terminal by typing pdp11 afterwards.
+		    echo
+		    echo "But that is all in the manual..."
+		    echo
+	    else
 
-		# Set up pidp11 init script
-		if [ ! -x /opt/pidp11/etc/rc.pidp11 ]; then
-			echo pidp11 not found in /opt/pidp11. Abort.
-			exit 1
-		else
-			sudo ln -s /opt/pidp11/etc/rc.pidp11 /etc/init.d/pidp11
-			sudo update-rc.d pidp11 defaults
-			echo pidp11 added to init.d
-		fi
+		# enable rpcbind
+		sudo systemctl enable rpcbind
+		sudo systemctl start rpcbind
+		echo please check that rpcbind is up:
+		sudo systemctl status rpcbind
 
-
-		# setup 'pdp.sh' (script to return to screen with pidp11) 
-		# in home directory if it is not there yet
-		test ! -L /home/pi/pdp.sh && ln -s /opt/pidp11/etc/pdp.sh /home/pi/pdp.sh
-		# easier to use - just put a pdp11 command into /usr/local
-		sudo ln -f -s /opt/pidp11/etc/pdp.sh /usr/local/bin/pdp11
-
-		# add pdp.sh to the end of pi's .profile to let a new login 
+		# add pdp11 to the end of pi's .profile to let a new login 
 		# grab the terminal automatically
 		#   first, make backup .foo copy...
 		test ! -f /home/pi/profile.foo && cp -p /home/pi/.profile /home/pi/profile.foo
 		#   add the line to .profile if not there yet
-		if grep -xq "/home/pi/pdp.sh" /home/pi/.profile
+		if grep -xq "pdp11 # autostart" /home/pi/.profile
 		then
-			echo .profile already done, OK.
+			echo .profile already contains pdp11 for autostart, OK.
 		else
-			sed -e "\$a/home/pi/pdp.sh" -i /home/pi/.profile
+			sed -e "\$apdp11 # autostart" -i /home/pi/.profile
 		fi
-
+	    fi
 	    break;;
         [Nn]* ) 
 	    echo Skipped software install
@@ -188,10 +195,10 @@ while true; do
     case $prxn in
         [Yy]* ) 
 	    cd /opt/pidp11
-            sudo wget -O /opt/pidp11/systems.tar.gz http://pidp.net/pidp11/systems24.tar.gz
+            wget -O /opt/pidp11/systems.tar.gz http://pidp.net/pidp11/systems24.tar.gz
 	    echo "Decompressing... (might take a while)"
-	    sudo gzip -d systems.tar.gz
-            sudo tar -xvf systems.tar
+	    gzip -d systems.tar.gz
+            tar -xvf systems.tar
 	    break;;
         [Nn]* ) 
 	    echo PDP-11 operating systems not added at your request. You can do it later.
@@ -236,7 +243,6 @@ while true; do
 	    fc-cache -v -f
 
 
-
 	    echo "Desktop updated."
 	    break;;
 
@@ -275,27 +281,27 @@ while true; do
 		else
 		    echo
 		    echo "Creating $dir..."
-		    sudo mkdir "$dir"
+		    mkdir "$dir"
 		    echo
 		fi
 
 	        echo "Downloading from github.com/chasecovello/211bsd-pidp11"
 	        echo "please visit that page for more information"
 	        echo
-	        sudo wget -O "${dir}/boot.ini" http://raw.githubusercontent.com/chasecovello/211bsd-pidp11/refs/heads/master/boot.ini 
-		sudo wget -O "${dir}/2.11BSD_rq.dsk.xz" http://github.com/chasecovello/211bsd-pidp11/raw/refs/heads/master/2.11BSD_rq.dsk.xz
+	        wget -O "${dir}/boot.ini" http://raw.githubusercontent.com/chasecovello/211bsd-pidp11/refs/heads/master/boot.ini 
+		wget -O "${dir}/2.11BSD_rq.dsk.xz" http://github.com/chasecovello/211bsd-pidp11/raw/refs/heads/master/2.11BSD_rq.dsk.xz
 		echo
 		echo Decompressing...
 		echo
 		cd "${dir}"
-		sudo unxz -f ./2.11BSD_rq.dsk.xz
+		unxz -f ./2.11BSD_rq.dsk.xz
 		echo
 		echo Modifying boot.ini by commenting out the icr device for bmp280 i2c
 		echo
-	        sudo sed -i 's/^attach icr icr.txt$/;attach icr icr.txt/' "${dir}/boot.ini"
+	        sed -i 's/^attach icr icr.txt$/;attach icr icr.txt/' "${dir}/boot.ini"
 		echo
 		echo Modifying boot.ini by enabling the line set realcons connected:
-                sudo sed -i 's/^;set realcons connected$/set realcons connected/' "${dir}/boot.ini"
+                sed -i 's/^;set realcons connected$/set realcons connected/' "${dir}/boot.ini"
 		echo
 		echo ...Done. Set SR switches to octal 0211 to boot into this newly installed 211.BSD
 		echo    Do not forget to visit github.com/chasecovello/211bsd-pidp11 
@@ -316,13 +322,9 @@ while true; do
 
 		# Add the new line to selections and sort it alphabetically
 		echo "...Adding boot option $new_line to selections menu"
-		#sudo sh -c 'cat "$file" | sort | uniq > temp_file && mv temp_file "$file"'
-		#sudo sh -c "{ cat \"$file\"; echo \"$new_line\" } | sort | uniq > temp_file && mv temp_file \"$file\""
-		sudo sh -c "{ cat \"$file\"; echo \"$new_line\"; } | sort | uniq > temp_file && mv temp_file \"$file\""
+		sh -c "{ cat \"$file\"; echo \"$new_line\"; } | sort | uniq > temp_file && mv temp_file \"$file\""
 
 		echo "Line added. Reboot with SR switches set to 0211 to boot the new system."
-
-
 
 	    break;;
 
@@ -359,10 +361,10 @@ while true; do
 		else
 		    echo
 		    echo "Creating $dir..."
-		    sudo mkdir "$dir"
+		    mkdir "$dir"
 		    echo
 		    echo "Copying boot.ini from install/boot.ini.bilquist directory..."
-		    sudo cp /opt/pidp11/install/boot.ini.bilquist "${dir}/boot.ini"
+		    cp /opt/pidp11/install/boot.ini.bilquist "${dir}/boot.ini"
 		fi
 
 		echo
@@ -379,11 +381,11 @@ while true; do
 		for file in "${files[@]}"; do
 		    echo
 		    echo "Downloading $file..."
-		    sudo wget --user="anonymous" --password="$email" -O ${file} "${ftp_url}/${file}"
+		    wget --user="anonymous" --password="$email" -O ${file} "${ftp_url}/${file}"
 		    echo
 		    echo Decompressing...
 		    echo
-		    sudo gunzip -f "${file}" 
+		    gunzip -f "${file}" 
 		done
 
 		echo
@@ -407,11 +409,9 @@ while true; do
 
 		# Add the new line to selections and sort it alphabetically
 		echo "...Adding boot option $new_line to selections menu"
-		sudo sh -c "{ cat \"$file\"; echo \"$new_line\"; } | sort | uniq > temp_file && mv temp_file \"$file\""
+		sh -c "{ cat \"$file\"; echo \"$new_line\"; } | sort | uniq > temp_file && mv temp_file \"$file\""
 
 		echo "Line added. Reboot with SR switches set to 2024 to boot the new system."
-
-
 
 	    break;;
 
@@ -423,7 +423,3 @@ while true; do
 done
 echo
 echo Done. Please do a sudo reboot and the front panel will come to life.
-
-
-
-
