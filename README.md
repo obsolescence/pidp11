@@ -51,7 +51,7 @@ The PDP-11's console terminal gets 'grabbed by' / displayed on the latest Linux 
 
 You can also use the desktop icon for `pdp11control`. A nicer terminal than the basic `pdp11` is **Angelo Papenhoff's neat VT-52 simulator**, now included. Double click the desktop icon for it, use F11 to switch between full screen and windowed. See the screen shots:
 <img src="https://github.com/user-attachments/assets/91929dea-749f-446c-9219-528f788ba42a" width="60%" align="left" />
-<img src="[images/image2.png](https://github.com/user-attachments/assets/14b0f3ee-dba2-4eb8-8c9b-b8c816a0f7f7)" width="40%" align="left" />
+<img src="[images/image2.png](https://github.com/user-attachments/assets/14b0f3ee-dba2-4eb8-8c9b-b8c816a0f7f7)" width="30%" align="left" />
 <br>
 <!--
 ![full-screen](https://github.com/user-attachments/assets/91929dea-749f-446c-9219-528f788ba42a)![desktop-menu](https://github.com/user-attachments/assets/14b0f3ee-dba2-4eb8-8c9b-b8c816a0f7f7)
