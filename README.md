@@ -18,7 +18,7 @@ Note that you do not necessarily need to have the PiDP-11 hardware.
 
 This will run on any Pi, but you have to tell it which OS you want to boot from the command ine rather than from the front panel. See the manual for a how-to: https://obsolescence.dev/pidp11/PiDP-11_Manual.pdf
 
-This will ALSO run on any Linux laptop (tested on Ubuntu 24.04) and presumably, Windows 11 with WSL2 subsystem (although untested). Just in case you want to have a mobile PDP-11 or want to play.
+This will ALSO run on any Linux laptop (command line only, no desktop features, tested on Ubuntu 24.04) and presumably, Windows 11 with WSL2 subsystem (although untested). Just in case you want to have a mobile PDP-11 or want to develop on the go.
 
 # Move to Github & the previous install package
 
