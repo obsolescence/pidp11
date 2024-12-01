@@ -158,6 +158,8 @@ while true; do
 		    echo
 		    echo "But that is all in the manual..."
 		    echo
+		    echo copying modified pidp11.sh for Amd64...
+		    cp /opt/pidp11/bin/backupAmd64-binaries/pidp11.sh /opt/pidp11/bin/pidp11.sh
 	    else
 
 		# enable rpcbind
