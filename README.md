@@ -48,10 +48,12 @@ When you just run the package on a Naked Pi or a Linux laptop, you need to do `p
 The PDP-11's console terminal gets 'grabbed by' / displayed on the latest Linux terminal you've logged in to, or called `pdp11` from. Thus, you can switch from having the pdp11 terminal on the Pi's GUI, to a pdp11 terminal through a remote ssh or telnet session - you can grab it where ever you want it. Or close it. The PDP-11 does not notice, its virtual terminal (encapsulated in the linux `screen` utility) keeps running in the background. So `ssh pi@pidp11.local` will get you straight into the PDP-11 from your laptop. 
 
 You can also use the desktop icon for `pdp11control`. A nicer terminal than the basic `pdp11` is **Angelo Papenhoff's neat VT-52 simulator**, now included. Double click the desktop icon for it, use F11 to switch between full screen and windowed. See the screen shots:
-<div>
-<img src="https://github.com/user-attachments/assets/91929dea-749f-446c-9219-528f788ba42a" width="55%" align="left" />
-<img src="https://github.com/user-attachments/assets/14b0f3ee-dba2-4eb8-8c9b-b8c816a0f7f7" width="38%" align="left" />
-</div>
+<table border="1" cellpadding="10">
+  <tr>
+      <td></td><img src="https://github.com/user-attachments/assets/91929dea-749f-446c-9219-528f788ba42a" width="55%" align="left" />
+      <td></td><img src="https://github.com/user-attachments/assets/14b0f3ee-dba2-4eb8-8c9b-b8c816a0f7f7" width="38%" align="left" />
+</tr>
+</table>
 For either maximum pain or maximum demonstration value (it depends on your mindset), a **Teletype Model 33 simulator** is also available. With sampled Teletype noise and the excruciating 10cps speed. Just close it when you've had enough.
 
 The hidden front panel controls (if you have a PiDP-11 front panel!) are unchanged from how they were described in the manual: https://obsolescence.dev/pidp11/PiDP-11_Manual.pdf
