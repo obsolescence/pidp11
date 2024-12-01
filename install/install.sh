@@ -163,8 +163,8 @@ while true; do
 		# enable rpcbind
 		sudo systemctl enable rpcbind
 		sudo systemctl start rpcbind
-		echo please check that rpcbind is up:
-		sudo systemctl status rpcbind
+		#echo please check that rpcbind is up:
+		#sudo systemctl status rpcbind
 
 		# add pdp11 to the end of pi's .profile to let a new login 
 		# grab the terminal automatically
