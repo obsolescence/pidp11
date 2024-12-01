@@ -42,6 +42,7 @@ This is important to understand, it is a fundamental change to the controls comp
 - `pdp11control stop`, `pdp11control status` do what you'd expect.
 - `pdp11control start` starts the PDP-11 simulation when you have a PiDP-11. 
 When you just run the package on a Naked Pi or a Linux laptop, you need to do `pdp11control start x`, where `x` is the boot number you want to run:
+<br><br>
 ![menu](https://github.com/user-attachments/assets/b7ba9f3f-6eac-4df2-badf-35c045355a78)
 
 **pdp11** is the simple way to get access to the PDP-11 console terminal. 
