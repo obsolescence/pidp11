@@ -1,6 +1,5 @@
-![pidp11](https://github.com/user-attachments/assets/d325e9ee-9829-472e-8958-11c3fcf2f2f3)
+<img src="https://obsolescence.dev/images/pidp11/pidp11.jpg" width="60%" align="center" />
 
-<img src="[https://github.com/user-attachments/assets/91929dea-749f-446c-9219-528f788ba42a](https://github.com/user-attachments/assets/d325e9ee-9829-472e-8958-11c3fcf2f2f3)" width="50%" align="center" />
 # Github repository for the PiDP-11 project
 
 Main web sites:
