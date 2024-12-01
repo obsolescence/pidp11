@@ -32,7 +32,7 @@ The old version still works fine, and in case you have any problems, please fall
 
 This Github version of the software contains some meaningful improvements though.
 - everything runs in user space
-- the graphics display works under Wayland (which is now the default environment for Raspberry Pis in general and for the PiDP-11, too)
+- the graphics display works under Wayland (now the default for Raspberry Pis in general and for the PiDP-11, too)
 - unix v1 is added
 - the install script can install Chase Covello's updated 2.11BSD and Johnny Bilquist's updated RSX-11M+. *Importantly*, you can rerun the install script for any future updates they do, without waiting for the PiDP-11 package to be updated!
 
@@ -40,17 +40,19 @@ This Github version of the software contains some meaningful improvements though
 
 This is important to understand, it is a fundamental change to the controls compared to the old version. The PiDP-11 is now managed like the PiDP-10. Which means:
 
-**pdp11control** is the command to control the (simulated) PDP-11. 
-`pdp11control stop`, `pdp11control status` do what you'd expect.
-`pdp11control start` starts the PDP-11 simulation when you have a PiDP-11. 
+**pdp11control** is the command to control the (simulated) PDP-11.<br 
+- `pdp11control stop`, `pdp11control status` do what you'd expect.
+- `pdp11control start` starts the PDP-11 simulation when you have a PiDP-11. 
 When you just run the package on a Naked Pi or a Linux laptop, you need to do `pdp11control start x`, where `x` is the boot number you want to run:
-![Description of Image](images/menu.png)
+![menu](https://github.com/user-attachments/assets/b7ba9f3f-6eac-4df2-badf-35c045355a78)
 
 **pdp11** is the simple way to get access to the PDP-11 console terminal. 
 The PDP-11's console terminal gets 'grabbed by' / displayed on the latest Linux terminal you've logged in to, or called `pdp11` from. Thus, you can switch from having the pdp11 terminal on the Pi's GUI, to a pdp11 terminal through a remote ssh or telnet session - you can grab it where ever you want it. Or close it. The PDP-11 does not notice, its virtual terminal (encapsulated in the linux `screen` utility) keeps running in the background. So `ssh pi@pidp11.local` will get you straight into the PDP-11 from your laptop. 
 
 A nicer terminal is **Angelo Papenhoff's neat VT-52 simulator**, now included. Double click the desktop icon for it, use F11 to switch between full screen and windowed. See the screen shots:
-![Description of Image](images/full-screen.png)
+![full-screen](https://github.com/user-attachments/assets/91929dea-749f-446c-9219-528f788ba42a)![desktop-menu](https://github.com/user-attachments/assets/14b0f3ee-dba2-4eb8-8c9b-b8c816a0f7f7)
+
+
 For either maximum pain or maximum demonstration value (it depends on your mindset), a **Teletype Model 33 simulator** is also available. With sampled Teletype noise and the excruciating 10cps speed. Just close it when you've had enough.
 
 The hidden front panel controls (if you have a PiDP-11 front panel!) are unchanged from how they were described in the manual: https://obsolescence.dev/pidp11/PiDP-11_Manual.pdf
