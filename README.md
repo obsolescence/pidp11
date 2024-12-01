@@ -1,5 +1,6 @@
-![image](https://obsolescence.dev/images/pidp11/pidp11.jpg)
+![pidp11](https://github.com/user-attachments/assets/d325e9ee-9829-472e-8958-11c3fcf2f2f3)
 
+<img src="[https://github.com/user-attachments/assets/91929dea-749f-446c-9219-528f788ba42a](https://github.com/user-attachments/assets/d325e9ee-9829-472e-8958-11c3fcf2f2f3)" width="50%" align="center" />
 # Github repository for the PiDP-11 project
 
 Main web sites:
@@ -50,8 +51,8 @@ When you just run the package on a Naked Pi or a Linux laptop, you need to do `p
 The PDP-11's console terminal gets 'grabbed by' / displayed on the latest Linux terminal you've logged in to, or called `pdp11` from. Thus, you can switch from having the pdp11 terminal on the Pi's GUI, to a pdp11 terminal through a remote ssh or telnet session - you can grab it where ever you want it. Or close it. The PDP-11 does not notice, its virtual terminal (encapsulated in the linux `screen` utility) keeps running in the background. So `ssh pi@pidp11.local` will get you straight into the PDP-11 from your laptop. 
 
 You can also use the desktop icon for `pdp11control`. A nicer terminal than the basic `pdp11` is **Angelo Papenhoff's neat VT-52 simulator**, now included. Double click the desktop icon for it, use F11 to switch between full screen and windowed. See the screen shots:
-<img src="https://github.com/user-attachments/assets/91929dea-749f-446c-9219-528f788ba42a" width="60%" align="left" />
-<img src="[images/image2.png](https://github.com/user-attachments/assets/14b0f3ee-dba2-4eb8-8c9b-b8c816a0f7f7)" width="30%" align="left" />
+<img src="https://github.com/user-attachments/assets/91929dea-749f-446c-9219-528f788ba42a" width="55%" align="left" />
+<img src="https://github.com/user-attachments/assets/14b0f3ee-dba2-4eb8-8c9b-b8c816a0f7f7" width="30%" align="left" />
 <br>
 <!--
 ![full-screen](https://github.com/user-attachments/assets/91929dea-749f-446c-9219-528f788ba42a)![desktop-menu](https://github.com/user-attachments/assets/14b0f3ee-dba2-4eb8-8c9b-b8c816a0f7f7)
