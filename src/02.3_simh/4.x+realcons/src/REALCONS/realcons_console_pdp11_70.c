@@ -784,7 +784,7 @@ t_stat realcons_console_pdp11_70_service(realcons_console_logic_pdp11_70_t *_thi
 SIGNAL_SET(cpusignal_console_halt, 1); // stop execution - Joerg, shouldn't it be here, instead of above??
 
 FILE *bootfil;
-bootfil=fopen("/run/pidp11/tmpsimhcommand.txt", "r");
+bootfil=fopen("/dev/shm/pidp11/tmpsimhcommand.txt", "r");
 fscanf(bootfil, "%[^\n]s", _this->realcons->simh_cmd_buffer);
 strcat(_this->realcons->simh_cmd_buffer, "\n");
 fclose(bootfil);
