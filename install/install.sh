@@ -148,7 +148,7 @@ while true; do
 	    # the pdp11control script into /usr/local:
 	    sudo ln -i -s /opt/pidp11/bin/pdp11control.sh /usr/local/bin/pdp11control
 
-	    if [ "$ARCH" != "amd64" ]; then
+	    if [ "$ARCH" == "amd64" ]; then
 		    echo skipping autostart and rpcbind, because this is not a Raspberry Pi
 		    echo Not a problem: start manually by typing 
 		    echo pdp11control start x
