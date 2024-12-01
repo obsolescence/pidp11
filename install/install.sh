@@ -182,7 +182,7 @@ while true; do
     case $prxn in
         [Yy]* ) 
 	    cd /opt/pidp11
-            sudo wget -O /opt/pidp11/systems.tar.gz http://pidp.net/pidp11/systems.tar.gz
+            sudo wget -O /opt/pidp11/systems.tar.gz http://pidp.net/pidp11/systems24.tar.gz
             sudo gzip -d systems.tar.gz
             sudo tar -xvf systems.tar
 	    break;;
