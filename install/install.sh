@@ -45,6 +45,12 @@ while true; do
 		sudo apt install -y screen
 		# Install newer RPC system
 		sudo apt install -y libtirpc-dev
+		# enable rpcbind
+		sudo systemctl enable rpcbind
+		sudo systemctl start rpcbind
+		echo please check that rpcbind is up:
+		sudo systemctl status rpcbind
+
 	    break;;
         [Nn]* ) 
 	    echo Skipped install of dependencies - if not installed already, pidp11 will not work
@@ -183,7 +189,8 @@ while true; do
         [Yy]* ) 
 	    cd /opt/pidp11
             sudo wget -O /opt/pidp11/systems.tar.gz http://pidp.net/pidp11/systems24.tar.gz
-            sudo gzip -d systems.tar.gz
+	    echo "Decompressing... (might take a while)"
+	    sudo gzip -d systems.tar.gz
             sudo tar -xvf systems.tar
 	    break;;
         [Nn]* ) 
@@ -275,8 +282,8 @@ while true; do
 	        echo "Downloading from github.com/chasecovello/211bsd-pidp11"
 	        echo "please visit that page for more information"
 	        echo
-	        sudo wget -O "${dir}/boot.ini" https://raw.githubusercontent.com/chasecovello/211bsd-pidp11/refs/heads/master/boot.ini 
-		sudo wget -O "${dir}/2.11BSD_rq.dsk.xz" https://github.com/chasecovello/211bsd-pidp11/raw/refs/heads/master/2.11BSD_rq.dsk.xz
+	        sudo wget -O "${dir}/boot.ini" http://raw.githubusercontent.com/chasecovello/211bsd-pidp11/refs/heads/master/boot.ini 
+		sudo wget -O "${dir}/2.11BSD_rq.dsk.xz" http://github.com/chasecovello/211bsd-pidp11/raw/refs/heads/master/2.11BSD_rq.dsk.xz
 		echo
 		echo Decompressing...
 		echo
