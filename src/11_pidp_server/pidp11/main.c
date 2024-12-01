@@ -20,7 +20,9 @@
  IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-
+ 30-Nov-2024  OV:   Re-applied lost bug fix for race condition.
+ 			Symptoms: incidental freezing of LEDs, 
+			but rotary LEDs still work.
  27-Dec-2018  SC/MH OV: added MH fix occasional blinking LEDs (LAMPTEST in the gpiopattern thread)
  03-Feb-2018  JH    fixed SUPER-USER-KERNEL encoding
  07-Sep-2017  MH    Added further command line option (-L)

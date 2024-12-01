@@ -49,6 +49,8 @@ case $yn in
 	    # to access GPIO with root privileges:
             sudo chmod +s /opt/pidp11/src/11_pidp_server/scanswitch/scansw
             sudo chmod +s /opt/pidp11/src/11_pidp_server/pidp11/bin-rpi/pidp1170_blinkenlightd
+	    # to run a RT thread:
+	    sudo setcap cap_sys_nice+ep /opt/pidp11/src/11_pidp_server/pidp11/bin-rpi/pidp1170_blinkenlightd
 	    ;;
     [Nn]* ) ;;
         * ) echo "Please answer yes or no.";;
