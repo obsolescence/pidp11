@@ -1,7 +1,7 @@
 [Desktop Entry]
 Name=VT-52 full screen
 Comment=VT-52 full screen
-Exec=/opt/pidp11/bin/vt52 -f bash /home/pi/pdp.sh
+Exec=/opt/pidp11/bin/vt52 -f bash pdp11
 Terminal=false
 Type=Application
 Icon=/opt/pidp11/install/vt52.svg

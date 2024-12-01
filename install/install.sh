@@ -216,6 +216,9 @@ while true; do
     case $prxn in
         [Yy]* ) 
 	    cp /opt/pidp11/install/vt52.desktop /home/pi/Desktop/
+	    cp /opt/pidp11/install/vt52fullscreen.desktop /home/pi/Desktop/
+	    cp /opt/pidp11/install/tty.desktop /home/pi/Desktop/
+	    cp /opt/pidp11/install/tek.desktop /home/pi/Desktop/
 
 	    #make pcmanf run on double click, change its config file
             config_file="/home/pi/.config/libfm/libfm.conf"
@@ -288,8 +291,14 @@ while true; do
 	        echo "Downloading from github.com/chasecovello/211bsd-pidp11"
 	        echo "please visit that page for more information"
 	        echo
-	        wget -O "${dir}/boot.ini" http://raw.githubusercontent.com/chasecovello/211bsd-pidp11/refs/heads/master/boot.ini 
-		wget -O "${dir}/2.11BSD_rq.dsk.xz" http://github.com/chasecovello/211bsd-pidp11/raw/refs/heads/master/2.11BSD_rq.dsk.xz
+		# --no-check-certificate because of unclear Encryption errors from github
+	        curl -L -o "${dir}/boot.ini" \
+"https://raw.githubusercontent.com/chasecovello/211bsd-pidp11/refs/heads/master/boot.ini" 
+		curl -L -o "${dir}/2.11BSD_rq.dsk.xz" \
+"https://github.com/chasecovello/211bsd-pidp11/raw/refs/heads/master/2.11BSD_rq.dsk.xz"
+#			"https://github.com/chasecovello/211bsd-pidp11/raw/refs/heads/master/2.11BSD_rq.dsk.xz"
+	        #wget --no-check-certificate  -O "${dir}/boot.ini" http://raw.githubusercontent.com/chasecovello/211bsd-pidp11/refs/heads/master/boot.ini 
+		#wget --no-check-certificate  -O "${dir}/2.11BSD_rq.dsk.xz" http://github.com/chasecovello/211bsd-pidp11/raw/refs/heads/master/2.11BSD_rq.dsk.xz
 		echo
 		echo Decompressing...
 		echo
