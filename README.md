@@ -1,12 +1,10 @@
-<img src="https://obsolescence.dev/images/pidp11/pidp11.jpg" width="60%" align="center" />
-#  
 # Github repository for the PiDP-11 project
 
 Main web sites:
+- https://obsolescence.dev/pidp11 - Overview & context
+- https://obsolescence.wixsite.com/obsolescence/pidp11 - Further details
 
-https://obsolescence.dev/pidp11 - Overview & context
-
-https://obsolescence.wixsite.com/obsolescence/pidp11 - Further details
+<img src="https://obsolescence.dev/images/pidp11/pidp11.jpg" width="60%" align="center" /> 
 
 Credits: The core components in the PiDP-11 project are the simH simulator (https://github.com/open-simh/simh) and Joerg Hoppe's BlinkenBone modifications(https://www.retrocmp.com).
 
