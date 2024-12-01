@@ -22,21 +22,20 @@ This will ALSO run on any Linux laptop (command line only, no desktop features, 
 
 # Move to Github & the previous install package
 
-We moved to Github only in November 2024, so this is still considered a beta version. 
+We moved to Github only in December 2024, and this is still considered the new beta version. 
 
 Before December 2024, the PiDP-11 install was done through downloading a tarball. 
 You might still see references to that old install method and that old version in the manual's various chapters and the PiDP-11 Google Group. 
 The old version still works fine, and in case you have any problems, please fall back on that version (with feedback please!).
 
 This Github version of the software contains some meaningful improvements though.
-- everything runs in user space
 - the graphics display works under Wayland (now the default for Raspberry Pis in general and for the PiDP-11, too)
-- unix v1 is added
-- the install script can install Chase Covello's updated 2.11BSD and Johnny Bilquist's updated RSX-11M+. *Importantly*, you can rerun the install script for any future updates they do, without waiting for the PiDP-11 package to be updated!
+- unix v1 is added, it has been reconstructed!
+- the install script can install Chase Covello's updated 2.11BSD and Johnny Bilquist's updated RSX-11M+. *Importantly*, you can now rerun the install script to grab any of their updates. These are the two oldest operating systems with active maintenance :-)
 
 # Operating the PiDP-11
 
-This is important to understand, it is a fundamental change to the controls compared to the old version. The PiDP-11 is now managed like the PiDP-10. Which means:
+Important to understand, this version has a fundamental change to the controls compared to the old version. The PiDP-11 is now managed like the PiDP-10. Which means:
 
 **pdp11control** is the command to control the (simulated) PDP-11. From the Linux command line:
 - `pdp11control stop`, `pdp11control status` do what you'd expect.
@@ -51,7 +50,7 @@ The PDP-11's console terminal gets 'grabbed by' / displayed on the latest Linux 
 You can also use the desktop icon for `pdp11control`. A nicer terminal than the basic `pdp11` is **Angelo Papenhoff's neat VT-52 simulator**, now included. Double click the desktop icon for it, use F11 to switch between full screen and windowed. See the screen shots:
 <div>
 <img src="https://github.com/user-attachments/assets/91929dea-749f-446c-9219-528f788ba42a" width="55%" align="left" />
-<img src="https://github.com/user-attachments/assets/14b0f3ee-dba2-4eb8-8c9b-b8c816a0f7f7" width="35%" align="left" />
+<img src="https://github.com/user-attachments/assets/14b0f3ee-dba2-4eb8-8c9b-b8c816a0f7f7" width="38%" align="left" />
 </div>
 For either maximum pain or maximum demonstration value (it depends on your mindset), a **Teletype Model 33 simulator** is also available. With sampled Teletype noise and the excruciating 10cps speed. Just close it when you've had enough.
 
