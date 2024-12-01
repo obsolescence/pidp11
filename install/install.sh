@@ -167,18 +167,32 @@ while true; do
 		sudo systemctl start rpcbind
 		#echo please check that rpcbind is up:
 		#sudo systemctl status rpcbind
+		echo
+		echo
+		echo "Autostart the PDP-11 using the GUI(Y) or .profile (H)?"
+    		read -p "-- Y recommended, H is for headless Pis without GUI:" yhn
+		case $prxn in
+        	  [Yy]* ) 
+			mkdir -p ~/.config/autostart
+			cp /opt/pidp11/install/pdp11startup.desktop ~/.config/autostart
+			break;;
+        	  [Nn]* ) 
+			# add pdp11 to the end of pi's .profile to let a new login 
+			# grab the terminal automatically
+			#   first, make backup .foo copy...
+			test ! -f /home/pi/profile.foo && cp -p /home/pi/.profile /home/pi/profile.foo
+			#   add the line to .profile if not there yet
+			if grep -xq "pdp11 # autostart" /home/pi/.profile
+			then
+				echo .profile already contains pdp11 for autostart, OK.
+			else
+				sed -e "\$apdp11 # autostart" -i /home/pi/.profile
+			fi
+            		break;;
+        	  * ) echo "Please answer Y or N.";;
+    		esac
 
-		# add pdp11 to the end of pi's .profile to let a new login 
-		# grab the terminal automatically
-		#   first, make backup .foo copy...
-		test ! -f /home/pi/profile.foo && cp -p /home/pi/.profile /home/pi/profile.foo
-		#   add the line to .profile if not there yet
-		if grep -xq "pdp11 # autostart" /home/pi/.profile
-		then
-			echo .profile already contains pdp11 for autostart, OK.
-		else
-			sed -e "\$apdp11 # autostart" -i /home/pi/.profile
-		fi
+
 	    fi
 	    break;;
         [Nn]* ) 
@@ -221,6 +235,7 @@ while true; do
 	    cp /opt/pidp11/install/vt52fullscreen.desktop /home/pi/Desktop/
 	    cp /opt/pidp11/install/tty.desktop /home/pi/Desktop/
 	    cp /opt/pidp11/install/tek.desktop /home/pi/Desktop/
+	    cp /opt/pidp11/install/pdp11control.desktop /home/pi/Desktop/
 
 	    #make pcmanf run on double click, change its config file
             config_file="/home/pi/.config/libfm/libfm.conf"

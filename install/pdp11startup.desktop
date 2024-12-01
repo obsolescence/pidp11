@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=pidp11-startup
+Comment=Start up PiDP-11
+Exec=bash pdp11control start
+Terminal=false
+Type=Application
+Icon=/opt/pidp11/install/pdp11control.svg
+Categories=X-PDP11;
+StartupNotify=true
