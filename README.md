@@ -44,7 +44,7 @@ Important to understand, this version has a fundamental change to the controls c
 - `pdp11control start x` or `pdp11control restart x` can be used without PiDP-11 hardware. `x` is the boot number you want to run, as shown in the default Idled boot mode, see below.
 - You can also use the desktop icon for `pdp11control`. 
 
-<br><br>
+<br>
 ![menu](https://github.com/user-attachments/assets/b7ba9f3f-6eac-4df2-badf-35c045355a78)
 
 **pdp11** is the simple way to get access to the PDP-11 console terminal.<br>
