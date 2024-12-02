@@ -59,7 +59,7 @@ A nicer terminal than the basic `pdp11` is **Angelo Papenhoff's neat VT-52 simul
 </tr>
 </table>
 For either maximum pain or maximum demonstration value (it depends on your mindset), a clattering <b>Teletype Model 33 simulator</b> is also present. With sampled Teletype noise and the excruciating 10cps speed. Just close it when you've had enough. Lots more nice terminal simulations can be used to access the PiDP-11 from your laptop. See https://github.com/aap/vt05, https://github.com/larsbrinkhoff/terminal-simulator and https://github.com/rricharz/Tek4010/ for starters.
-<br>
+<br><br>
 <table border="1" cellpadding="10">
   <tr>
       <td><img src="https://github.com/user-attachments/assets/31427701-1230-4438-990f-a579b4ab51e1" width="75%" align="left" /></td>
