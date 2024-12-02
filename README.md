@@ -43,10 +43,11 @@ Important to understand, this version has a fundamental change to the controls c
 - `pdp11control restart` restarts the PDP-11 (when you have a PiDP-11, it's already running when you power up though, and you'd normally do a restart using the front panel of course).
 - `pdp11control start x` or `pdp11control restart x` can be used without PiDP-11 hardware. `x` is the boot number you want to run, as shown in the default Idled boot mode, see below.
 - You can also use the desktop icon for `pdp11control`.
-<img src="https://github.com/user-attachments/assets/b7ba9f3f-6eac-4df2-badf-35c045355a78" width="100%" align="right" />
+- <img src="https://github.com/user-attachments/assets/b7ba9f3f-6eac-4df2-badf-35c045355a78" width="100%" align="right" />
 <br><br>
 <b>pdp11</b> is the simple way to get access to the PDP-11 console terminal.<br>
-- The PDP-11's console terminal gets 'grabbed by' / displayed on the latest Linux terminal you've logged in to, or called `pdp11` from. Thus, you can switch from having the pdp11 terminal on the Pi's GUI, to a pdp11 terminal through a remote ssh or telnet session - you can grab it where ever you want it. Or close it. The PDP-11 does not notice, its virtual terminal (encapsulated in the linux `screen` utility) keeps running in the background.
+- The PDP-11's console terminal gets 'grabbed by' / displayed on the latest Linux terminal you've logged in to, or called `pdp11` from.
+- Thus, you can switch from having the pdp11 terminal on the Pi's GUI, to a pdp11 terminal through a remote ssh or telnet session - you can grab it where ever you want it. Or close it. The PDP-11 does not notice, its virtual terminal (encapsulated in the linux `screen` utility) keeps running in the background.
 - So `ssh pi@pidp11.local` will get you straight into the PDP-11 from your laptop. 
 
 A nicer terminal than the basic `pdp11` is **Angelo Papenhoff's neat VT-52 simulator**, now included. Double click the desktop icon for it, use F11 to switch between full screen and windowed. See the screen shots:
@@ -56,7 +57,7 @@ A nicer terminal than the basic `pdp11` is **Angelo Papenhoff's neat VT-52 simul
       <td><img src="https://github.com/user-attachments/assets/fc0b7a3c-b8de-4968-80c4-d02a53a36e12" width="100%" align="left" /></td>
 </tr>
 </table>
-For either maximum pain or maximum demonstration value (it depends on your mindset), a clattering <b>Teletype Model 33 simulator</b> is also present. With sampled Teletype noise and the excruciating 10cps speed. Just close it when you've had enough. Lots more nice terminal simulations can be used to access the PiDP-11 from your laptop. See https://github.com/aap/vt05, https://github.com/larsbrinkhoff/terminal-simulator and https://github.com/rricharz/Tek4010/ for starters.
+For either maximum pain or maximum demonstration value (it depends on your mindset), a clattering <b>Teletype Model 33 simulator</b> is also present. With sampled Teletype noise and the excruciating 10cps speed. Just close it when you've had enough. <br><br>Lots more nice terminal simulations can be used to access the PiDP-11 from your laptop. See https://github.com/aap/vt05, https://github.com/larsbrinkhoff/terminal-simulator and https://github.com/rricharz/Tek4010/ for starters.
 <br><br>
 <table border="1" cellpadding="10">
   <tr>
