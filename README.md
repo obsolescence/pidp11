@@ -38,9 +38,9 @@ This new Github version contains some meaningful improvements though:
 Important to understand, this version has a fundamental change to the controls compared to the old version. The PiDP-11 is now managed like the PiDP-10. Which means:
 
 **pdp11control** is the command to control the (simulated) PDP-11. From the Linux command line:
-- `pdp11control stop`, `pdp11control status` do what you'd expect.<br> Please shut down PDP-11 operating systems before `pdp11control stop` (applies to unix and RSX-11).
-- `pdp11control start` starts the PDP-11 simulation when you have a PiDP-11.
-- `pdp11control start x` is used when you do not have PiDP-11 front panel hardware. `x` is the boot number you want to run, as shown in the default Idled boot mode:
+- `pdp11control stop`, `pdp11control status` do what you'd expect.<br> Please shut down PDP-11 operating systems before `pdp11control stop` (applies to unices and RSX).
+- `pdp11control restart` restarts the PDP-11 (when you have a PiDP-11, it's already running when you power up, and you'd normally do this through the front panel switches of course).
+- `pdp11control start x` or `pdp11control restart x` can be used without PiDP-11 hardware. `x` is the boot number you want to run, as shown in the default Idled boot mode:
 <br><br>
 ![menu](https://github.com/user-attachments/assets/b7ba9f3f-6eac-4df2-badf-35c045355a78)
 
@@ -54,6 +54,6 @@ You can also use the desktop icon for `pdp11control`. A nicer terminal than the 
       <td></td><img src="https://github.com/user-attachments/assets/fc0b7a3c-b8de-4968-80c4-d02a53a36e12" width="48%" align="left" />
 </tr>
 </table>
-For either maximum pain or maximum demonstration value (it depends on your mindset), a **Teletype Model 33 simulator** is also available. With sampled Teletype noise and the excruciating 10cps speed. Just close it when you've had enough. Lots more nice terminal simulations can be used to access the PiDP-11 from your laptop. See https://github.com/aap/vt05, https://github.com/larsbrinkhoff/terminal-simulator and https://github.com/rricharz/Tek4010/ for starters.
+For either maximum pain or maximum demonstration value (it depends on your mindset), a clattering <b>Teletype Model 33 simulator</b> is now also present. With sampled Teletype noise and the excruciating 10cps speed. Just close it when you've had enough. Lots more nice terminal simulations can be used to access the PiDP-11 from your laptop. See https://github.com/aap/vt05, https://github.com/larsbrinkhoff/terminal-simulator and https://github.com/rricharz/Tek4010/ for starters.
 <br><br>
 The **hidden front panel controls** (if you have PiDP-11 front panel hardware!) are unchanged from how they were described in the manual: https://obsolescence.dev/pidp11/PiDP-11_Manual.pdf. Reboot into a new OS with the front panel switches set, or shut down with HALT enabled, pressing the top rotary knob.
