@@ -20,9 +20,8 @@
  IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
- 30-Nov-2024  OV:   Re-applied lost bug fix for race condition.
- 			Symptoms: incidental freezing of LEDs, 
-			but rotary LEDs still work.
+
+ 14-Jul-2019  JRT   Added handling of the Data Selector switch (runs a script or locks the panel)
  27-Dec-2018  SC/MH OV: added MH fix occasional blinking LEDs (LAMPTEST in the gpiopattern thread)
  03-Feb-2018  JH    fixed SUPER-USER-KERNEL encoding
  07-Sep-2017  MH    Added further command line option (-L)
@@ -60,7 +59,9 @@
 #include <ctype.h>
 #include <errno.h>
 #include <pthread.h>
-#include <inttypes.h> 
+#include <inttypes.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 #include <unistd.h>
 
 #include "blinkenlight_panels.h"
@@ -87,7 +88,7 @@ int opt_test = 0;
 int opt_background = 0;
 int panel_lock = 0; // Default to panel unlocked
 int pwrDebounce=0;
-
+int dataDebounce=0;
 
 extern long gpiopattern_update_period_us;
 
@@ -110,7 +111,7 @@ blinkenlight_control_t *control_raw_ledstatus[6]; //6 not 8 for PiDP11
 // ------------- from realcons_console_pdp11_70.h ----------------------
 blinkenlight_control_t *switch_SR, *switch_LOADADRS, *switch_EXAM, *switch_DEPOSIT, *switch_CONT,
         *switch_HALT, *switch_S_BUS_CYCLE, *switch_START, *switch_DATA_SELECT, *switch_ADDR_SELECT,
-        *switch_LAMPTEST, *switch_PANEL_LOCK, *switch_POWER;
+        *switch_LAMPTEST, *switch_PANEL_LOCK, *switch_POWER, *switch_DATA;
 
 // output controls on the panel
 blinkenlight_control_t *leds_ADDRESS, *leds_DATA, *led_PARITY_HIGH, *led_PARITY_LOW, *led_PAR_ERR,
@@ -134,38 +135,83 @@ static void on_blinkenlight_api_panel_get_controlvalues(blinkenlight_panel_t *p)
         if (c->is_input) {
 
             if (c == switch_POWER)
-			{
+	    {
+                if (panel_lock == 1)
+                {
+                        // Ignore the power switch while the panel is locked
+                        c->value = 1;
+                        continue;
+                }
+
                 c->value = ((gpio_switchstatus[1] & 1<<10)==0?0:1); // send "power switch" signal
-				//printf("%" PRIu64 " ",c->value);
-				if ((c->value)==0)
+		//printf("%" PRIu64 " ",c->value);
+		if ((c->value)==0)
+		{
+			if (pwrDebounce==0)	// do it only once, when power button is triggered
+			{
+				char buffer[255];
+				pwrDebounce=1;	// do it only once, when power button is triggered
+
+				if (switch_HALT->value==0)
 				{
-					if (pwrDebounce==0)	// do it only once, when power button is triggered
-					{
-						char buffer[255];
-						pwrDebounce=1;	// do it only once, when power button is triggered
-						
-						if (switch_HALT->value==0)
-						{
-							sprintf(buffer,"/opt/pidp11/bin/rebootsimh.sh");
-							FILE *bootfil = popen(buffer, "r");
-							printf("\r\n--> Rebooting...\r\n");
-							pclose(bootfil);
-						}
-						else
-						{
-							sprintf(buffer,"/opt/pidp11/bin/down.sh");
-							FILE *bootfil = popen(buffer, "r");
-							printf("--> System shutdown - allow 15 seconds before power off\r\n");
-							pclose(bootfil);
-						}
-					}
+					sprintf(buffer,"/opt/pidp11/bin/rebootsimh.sh");
+					FILE *bootfil = popen(buffer, "r");
+					printf("\r\n--> Rebooting...\r\n");
+					pclose(bootfil);
 				}
 				else
-					pwrDebounce=0;	// power button released
+				{
+					sprintf(buffer,"/opt/pidp11/bin/down.sh");
+					FILE *bootfil = popen(buffer, "r");
+					printf("--> System shutdown - allow 15 seconds before power off\r\n");
+					pclose(bootfil);
+				}
 			}
-            else if (c == switch_PANEL_LOCK)
-                c->value = panel_lock; // send "panel lock" switch as defined by -L
+		}
+		else
+		{
+			pwrDebounce=0;	// power button released
+		}
+	    }
+            else if (c == switch_DATA)
+            {
+		c->value = ((gpio_switchstatus[1] & 1<<11) == 0 ? 0 : 1);
+                if ((c->value) == 0)
+                {
+                	if (dataDebounce == 0)
+                        {
+				int scriptRetval = 256;  // Default to panel lock
+				struct stat sb;
+                        	char *data_switch_filename = "/opt/pidp11/bin/data_switch.sh";
 
+				dataDebounce = 1;
+
+				// If the "data_switch.sh" script exists, execute it.
+				// Otherwise toggle panel lock (or if the script exits with a value of 1)
+				if (stat(data_switch_filename, &sb) >= 0)
+				{
+					FILE *datafil = popen(data_switch_filename, "r");
+					if (print_level == LOG_DEBUG)
+						printf("\r\nExecuting %s\r\n", data_switch_filename);
+					scriptRetval = pclose(datafil);
+				}
+
+				if (scriptRetval == 256)
+				{
+					panel_lock = panel_lock > 0 ? 0 : 1;
+					printf("\r\nPanel %s\r\n", panel_lock > 0 ? "Locked" : "Unlocked");
+				}
+			}
+		}
+ 		else
+		{
+			dataDebounce = 0;
+		}
+            }
+            else if (c == switch_PANEL_LOCK)
+            {
+                c->value = panel_lock; // send "panel lock" switch as defined by -L
+	    }
             else {
                 // mount switch value from register bit fields
                 unsigned i_register_wiring;
@@ -663,6 +709,7 @@ static void register_controls()
     // TODO: what signals come out? Extend SimH 11/70 with POWER signal, like PDP8I ?
     switch_PANEL_LOCK = define_switch_slice(p, "PANEL_LOCK", 0, 1, 0, 0); // dummy, always 0
     switch_POWER = define_switch_slice(p, "POWER", 0, 1, 1, 0); // 20181228 Mike Hill's Flash Fix
+    switch_DATA = define_switch_slice(p, "DATA_SELECT_SWITCH", 0, 1, 0, 0);  // Data Selector button press
 
     blinkenlight_panels_config_fixup(blinkenlight_panel_list);
 }
