@@ -114,6 +114,8 @@ while true; do
             sudo cp $pidpath/bin/$subdir/vt52 $pidpath/bin/
             sudo cp $pidpath/bin/$subdir/sty $pidpath/bin/
             sudo cp $pidpath/bin/$subdir/tek4010 $pidpath/bin/
+	    # to run a RT thread:
+	    sudo setcap cap_sys_nice+ep /opt/pidp11/src/11_pidp_server/pidp11/bin-rpi/pidp1170_blinkenlightd
 	    echo 
 	    echo Copied precompiled binaries into place.
             break;;
