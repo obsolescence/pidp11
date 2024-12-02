@@ -42,9 +42,9 @@ Important to understand, this version has a fundamental change to the controls c
 - `pdp11control stop`, `pdp11control status` do what you'd expect.<br> Please shut down PDP-11 operating systems before `pdp11control stop` (applies to unices and RSX).
 - `pdp11control restart` restarts the PDP-11 (when you have a PiDP-11, it's already running when you power up though, and you'd normally do a restart using the front panel of course).
 - `pdp11control start x` or `pdp11control restart x` can be used without PiDP-11 hardware. `x` is the boot number you want to run, as shown in the default Idled boot mode, see below.
-- You can also use the desktop icon for `pdp11control`. <br>
-<img src="https://github.com/user-attachments/assets/b7ba9f3f-6eac-4df2-badf-35c045355a78" width="95%" align="right" />
-<br><br>
+- You can also use the desktop icon for `pdp11control`.
+<img src="https://github.com/user-attachments/assets/b7ba9f3f-6eac-4df2-badf-35c045355a78" width="100%" align="right" />
+
 <b>pdp11</b> is the simple way to get access to the PDP-11 console terminal.<br>
 - The PDP-11's console terminal gets 'grabbed by' / displayed on the latest Linux terminal you've logged in to, or called `pdp11` from. Thus, you can switch from having the pdp11 terminal on the Pi's GUI, to a pdp11 terminal through a remote ssh or telnet session - you can grab it where ever you want it. Or close it. The PDP-11 does not notice, its virtual terminal (encapsulated in the linux `screen` utility) keeps running in the background.
 - So `ssh pi@pidp11.local` will get you straight into the PDP-11 from your laptop. 
