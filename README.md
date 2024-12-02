@@ -66,4 +66,4 @@ For either maximum pain or maximum demonstration value (it depends on your minds
 </tr>
 </table>      
 <br>
-The **hidden front panel controls** (if you have PiDP-11 front panel hardware!) are unchanged from how they were described in the manual: https://obsolescence.dev/pidp11/PiDP-11_Manual.pdf. Reboot into a new OS with the front panel switches set, or shut down with HALT enabled, pressing the top rotary knob.
+The <b>hidden front panel controls</b> (if you have PiDP-11 front panel hardware!) are unchanged from how they were described in the manual: https://obsolescence.dev/pidp11/PiDP-11_Manual.pdf. Reboot into a new OS with the front panel switches set, or shut down with HALT enabled, pressing the top rotary knob.
