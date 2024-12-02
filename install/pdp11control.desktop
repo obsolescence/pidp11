@@ -1,8 +1,8 @@
 [Desktop Entry]
 Name=pidp11control
 Comment=Start up PiDP-11
-Exec=bash pdp11control
-Terminal=true
+Exec=/usr/bin/lxterminal -e "/opt/pidp11/bin/pdp11control.sh"
+Terminal=false
 Type=Application
 Icon=/opt/pidp11/install/pdp11control.svg
 Categories=X-PDP11;
