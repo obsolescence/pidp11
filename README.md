@@ -3,6 +3,7 @@
 Main web sites:
 - https://obsolescence.dev/pidp11 - Overview & context
 - https://obsolescence.wixsite.com/obsolescence/pidp11 - Further details
+- https://groups.google.com/g/pidp-11 - User group
 
 <img src="https://obsolescence.dev/images/pidp11/pidp11.jpg" align="center" /> 
 
@@ -57,6 +58,8 @@ A nicer terminal than the basic `pdp11` is **Angelo Papenhoff's neat VT-52 simul
       <td></td><img src="https://github.com/user-attachments/assets/fc0b7a3c-b8de-4968-80c4-d02a53a36e12" width="48%" align="left" />
 </tr>
 </table>
-For either maximum pain or maximum demonstration value (it depends on your mindset), a clattering <b>Teletype Model 33 simulator</b> is now also present. With sampled Teletype noise and the excruciating 10cps speed. Just close it when you've had enough. Lots more nice terminal simulations can be used to access the PiDP-11 from your laptop. See https://github.com/aap/vt05, https://github.com/larsbrinkhoff/terminal-simulator and https://github.com/rricharz/Tek4010/ for starters.
-<br><br>
+For either maximum pain or maximum demonstration value (it depends on your mindset), a clattering <b>Teletype Model 33 simulator</b> is also present. With sampled Teletype noise and the excruciating 10cps speed. Just close it when you've had enough. Lots more nice terminal simulations can be used to access the PiDP-11 from your laptop. See https://github.com/aap/vt05, https://github.com/larsbrinkhoff/terminal-simulator and https://github.com/rricharz/Tek4010/ for starters.
+<br>
+<img src="https://github.com/user-attachments/assets/31427701-1230-4438-990f-a579b4ab51e1" width="48%" align="left" />
+<br>
 The **hidden front panel controls** (if you have PiDP-11 front panel hardware!) are unchanged from how they were described in the manual: https://obsolescence.dev/pidp11/PiDP-11_Manual.pdf. Reboot into a new OS with the front panel switches set, or shut down with HALT enabled, pressing the top rotary knob.
