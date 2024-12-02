@@ -55,6 +55,12 @@ do_stop() {
 	    echo "Stopping PiDP-11"
 	    screen -S pidp11 -X quit
 	    status=$?
+	    sleep 1
+	    pkill client11
+	    pkill server11
+	    sleep 1
+	    pkill server11
+	    pkill client11
 	fi
 	return $status
 }
