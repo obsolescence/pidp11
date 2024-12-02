@@ -6,7 +6,7 @@ Main web sites:
 
 <img src="https://obsolescence.dev/images/pidp11/pidp11.jpg" align="center" /> 
 
-Credits: The core components in the PiDP-11 project are the simH simulator (https://github.com/open-simh/simh) and Joerg Hoppe's BlinkenBone modifications(https://www.retrocmp.com).
+Credits: The core components in the PiDP-11 project are the simH simulator (https://github.com/open-simh/simh) and Joerg Hoppe's BlinkenBone modifications (https://www.retrocmp.com).
 
 # Install instructions
 
@@ -16,7 +16,7 @@ Credits: The core components in the PiDP-11 project are the simH simulator (http
 
 Note that you do not necessarily need to have the PiDP-11 hardware. 
 
-This will run on any Pi, but you have to tell it which OS you want to boot from the command ine rather than from the front panel. See the manual for a how-to: https://obsolescence.dev/pidp11/PiDP-11_Manual.pdf
+This will run on any Pi, but without PiDP-11 front panel hardware, you'll have to tell which OS you want to boot from the command line rather than from the front panel switches. See the manual for a how-to: https://obsolescence.dev/pidp11/PiDP-11_Manual.pdf
 
 This will ALSO run on any Linux laptop (command line only, no desktop features, tested on Ubuntu 24.04) and presumably, Windows 11 with WSL2 subsystem (although untested). Just in case you want to have a mobile PDP-11 or want to develop on the go.
 
@@ -24,21 +24,21 @@ This will ALSO run on any Linux laptop (command line only, no desktop features, 
 
 We moved to Github only in December 2024, and this is still considered the new beta version. 
 
-Before December 2024, the PiDP-11 install was done through downloading a tarball. 
-You might still see references to that old install method and that old version in the manual's various chapters and the PiDP-11 Google Group. 
-The old version still works fine, and in case you have any problems, please fall back on that version (with feedback please!).
+Before December 2024, the PiDP-11 install was done through downloading a tarball.<br>
+You might still see references to that old version in the manual's various chapters and the PiDP-11 Google Group.<br>
+The old version still works fine, and in case you have any problems, please fall back on that version (with feedback please!).<br>
 
-This Github version of the software contains some meaningful improvements though.
-- the graphics display works under Wayland (now the default for Raspberry Pis in general and for the PiDP-11, too)
+This new Github version contains some meaningful improvements though:
+- VT11 graphics display works under Wayland (now the default for Raspberry Pis in general and for the PiDP-11, too)
 - unix v1 is added, it has been reconstructed!
-- the install script can install Chase Covello's updated 2.11BSD and Johnny Bilquist's updated RSX-11M+. *Importantly*, you can now rerun the install script to grab any of their updates. These are the two oldest operating systems with active maintenance :-)
+- the install script install Chase Covello's updated 2.11BSD and Johnny Bilquist's updated RSX-11M+. *Importantly*, you can now rerun the install script to grab any of their updates. These are the two oldest operating systems with active maintenance :-)
 
 # Operating the PiDP-11
 
 Important to understand, this version has a fundamental change to the controls compared to the old version. The PiDP-11 is now managed like the PiDP-10. Which means:
 
 **pdp11control** is the command to control the (simulated) PDP-11. From the Linux command line:
-- `pdp11control stop`, `pdp11control status` do what you'd expect. Please shut down PDP-11 operating systems before though, through the terminal (applies to unix and RSX-11).
+- `pdp11control stop`, `pdp11control status` do what you'd expect (do shut down PDP-11 operating systems before `pdp11control stop`, through the terminal (applies to unix and RSX-11).
 - `pdp11control start` starts the PDP-11 simulation when you have a PiDP-11.
 - `pdp11control start x` is used when you have not PiDP-11 front panel hardware, where `x` is the boot number you want to run:
 <br><br>
