@@ -54,15 +54,15 @@ Important to understand, this version has a fundamental change to the controls c
 A nicer terminal than the basic `pdp11` is **Angelo Papenhoff's neat VT-52 simulator**, now included. Double click the desktop icon for it, use F11 to switch between full screen and windowed. See the screen shots:
 <table border="1" cellpadding="10">
   <tr>
-      <td><img src="https://github.com/user-attachments/assets/1aaf1d55-d983-4f78-9256-6cb04ae4e5d4" width="48%" align="left" /></td>
-      <td><img src="https://github.com/user-attachments/assets/fc0b7a3c-b8de-4968-80c4-d02a53a36e12" width="48%" align="left" /></td>
+      <td><img src="https://github.com/user-attachments/assets/1aaf1d55-d983-4f78-9256-6cb04ae4e5d4" width="100%" align="left" /></td>
+      <td><img src="https://github.com/user-attachments/assets/fc0b7a3c-b8de-4968-80c4-d02a53a36e12" width="100%" align="left" /></td>
 </tr>
 </table>
 For either maximum pain or maximum demonstration value (it depends on your mindset), a clattering <b>Teletype Model 33 simulator</b> is also present. With sampled Teletype noise and the excruciating 10cps speed. Just close it when you've had enough. Lots more nice terminal simulations can be used to access the PiDP-11 from your laptop. See https://github.com/aap/vt05, https://github.com/larsbrinkhoff/terminal-simulator and https://github.com/rricharz/Tek4010/ for starters.
 <br>
 <table border="1" cellpadding="10">
   <tr>
-      <td><img src="https://github.com/user-attachments/assets/31427701-1230-4438-990f-a579b4ab51e1" width="48%" align="left" /></td>
+      <td><img src="https://github.com/user-attachments/assets/31427701-1230-4438-990f-a579b4ab51e1" width="75%" align="left" /></td>
 </tr>
 </table>      
 <br>
