@@ -1,6 +1,8 @@
+#!/bin/bash
+
 # Init script for pidp11.  
 
-boot_number=$2
+#boot_number=$2
 argc=$#
 pidp11="/opt/pidp11/bin/pidp11.sh"
 pidp_dir=`dirname $pidp11`
@@ -59,8 +61,8 @@ do_stop() {
 	    pkill client11
 	    pkill server11
 	    sleep 1
-	    pkill server11
 	    pkill client11
+	    pkill server11
 	fi
 	return $status
 }
@@ -77,8 +79,8 @@ case "$1" in
 
   restart)
 	do_stop
-	sleep 8
-	do_start
+	sleep 4
+	do_start $1 $2
 	;;
 
   status)
@@ -94,17 +96,19 @@ case "$1" in
 	;;
   *)
 	do_stat
-	if [ $status == 0 ]; then
+	if [ $status = 0 ]; then
 		read -p "(S)tart, Start with boot (number), or (C)ancel? " respx
 		case $respx in
 			[Ss]* )
 				do_start
 				;;
 			[0-9]* )
-				boot_number=$respx
+				#boot_number=$respx
 				# convert to decimal
 				#boot_number=$((8#$ooot_number))
-				do_start $1 $respx
+				set -- "$1" "$respx"
+				echo reassigned $2
+				do_start $1 $2
 				;;
 			[Cc]* )
 				exit 1
