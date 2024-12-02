@@ -38,9 +38,9 @@ This new Github version contains some meaningful improvements though:
 Important to understand, this version has a fundamental change to the controls compared to the old version. The PiDP-11 is now managed like the PiDP-10. Which means:
 
 **pdp11control** is the command to control the (simulated) PDP-11. From the Linux command line:
-- `pdp11control stop`, `pdp11control status` do what you'd expect (do shut down PDP-11 operating systems before `pdp11control stop`, through the terminal (applies to unix and RSX-11).
+- `pdp11control stop`, `pdp11control status` do what you'd expect.<br> Please shut down PDP-11 operating systems before `pdp11control stop` (applies to unix and RSX-11).
 - `pdp11control start` starts the PDP-11 simulation when you have a PiDP-11.
-- `pdp11control start x` is used when you have not PiDP-11 front panel hardware, where `x` is the boot number you want to run:
+- `pdp11control start x` is used when you do not have PiDP-11 front panel hardware. `x` is the boot number you want to run, as shown in the default Idled boot mode:
 <br><br>
 ![menu](https://github.com/user-attachments/assets/b7ba9f3f-6eac-4df2-badf-35c045355a78)
 
@@ -54,6 +54,6 @@ You can also use the desktop icon for `pdp11control`. A nicer terminal than the 
       <td></td><img src="https://github.com/user-attachments/assets/14b0f3ee-dba2-4eb8-8c9b-b8c816a0f7f7" width="38%" align="left" />
 </tr>
 </table>
-For either maximum pain or maximum demonstration value (it depends on your mindset), a **Teletype Model 33 simulator** is also available. With sampled Teletype noise and the excruciating 10cps speed. Just close it when you've had enough.
+For either maximum pain or maximum demonstration value (it depends on your mindset), a **Teletype Model 33 simulator** is also available. With sampled Teletype noise and the excruciating 10cps speed. Just close it when you've had enough. Lots more nice terminal simulations can be used to access the PiDP-11 from your laptop. See https://github.com/aap/vt05, https://github.com/larsbrinkhoff/terminal-simulator and https://github.com/rricharz/Tek4010/ for starters.
 <br><br>
-The hidden front panel controls (if you have PiDP-11 front panel hardware!) are unchanged from how they were described in the manual: https://obsolescence.dev/pidp11/PiDP-11_Manual.pdf. Reboot into a new OS with the front panel switches set, or shut down with HALT enabled, pressing the top rotary knob.
+The **hidden front panel controls** (if you have PiDP-11 front panel hardware!) are unchanged from how they were described in the manual: https://obsolescence.dev/pidp11/PiDP-11_Manual.pdf. Reboot into a new OS with the front panel switches set, or shut down with HALT enabled, pressing the top rotary knob.
