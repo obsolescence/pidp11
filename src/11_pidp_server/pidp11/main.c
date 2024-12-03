@@ -21,6 +21,9 @@
  CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
+ 30-Nov-2024  OV:   Re-applied lost bug fix for race condition.
+ 			Symptoms: incidental freezing of LEDs, 
+			but rotary LEDs still work.
  14-Jul-2019  JRT   Added handling of the Data Selector switch (runs a script or locks the panel)
  27-Dec-2018  SC/MH OV: added MH fix occasional blinking LEDs (LAMPTEST in the gpiopattern thread)
  03-Feb-2018  JH    fixed SUPER-USER-KERNEL encoding
