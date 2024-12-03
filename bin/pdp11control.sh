@@ -97,24 +97,26 @@ case "$1" in
   *)
 	do_stat
 	if [ $status = 0 ]; then
-		read -p "(S)tart, Start with boot (number), or (C)ancel? " respx
+		#read -p "(S)tart, Start with boot (number), or (C)ancel? " respx
+		read -p "(S)tart or (C)ancel? " respx
 		case $respx in
 			[Ss]* )
 				do_start
 				;;
-			[0-9]* )
-				#boot_number=$respx
-				# convert to decimal
-				#boot_number=$((8#$ooot_number))
-				set -- "$1" "$respx"
-				echo reassigned $2
-				do_start $1 $2
-				;;
+#			[0-9]* )
+#				#boot_number=$respx
+#				# convert to decimal
+#				#boot_number=$((8#$ooot_number))
+#				set -- "$1" "$respx"
+#				echo reassigned $2
+#				do_start $1 $2
+#				;;
 			[Cc]* )
 				exit 1
 				;;
 			* )
-				echo "Please answer with S, a boot number, or C.";;
+				echo "Please answer with S or C.";;
+				#echo "Please answer with S, a boot number, or C.";;
 		esac
 	else
 		read -p "(S)top or (C)ancel? " respx
