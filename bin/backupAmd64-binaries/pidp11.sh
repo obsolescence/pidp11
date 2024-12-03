@@ -25,10 +25,10 @@ while
 		# get low 18 bits and high 4 bits
 		#hi=`expr $sw / 262144`
 		lo=`expr $sw % 262144`
+		lo=`printf "%04o" $lo`
 	fi
 	# format as octal
 	# lo identifies bootscrtipt. hi is meant for future special functions
-	lo=`printf "%04o" $lo`
 	sel=`/opt/pidp11/bin/getsel.sh $lo | sed 's/default/idled/'`
 	echo "*** booting $sel ***"
 	# create a bootscript for simh in the /run ramdisk:
