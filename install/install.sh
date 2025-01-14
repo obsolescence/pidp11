@@ -187,7 +187,7 @@ while true; do
                 echo
                 echo "Autostart the PDP-11 using the GUI(Y) or .profile (H)?"
                     read -p "-- Y recommended, H is for headless Pis without GUI:" yhn
-                case $prxn in
+                case $yhn in
                       [Yy]* ) 
                         mkdir -p ~/.config/autostart
                         cp /opt/pidp11/install/pdp11startup.desktop ~/.config/autostart
@@ -195,7 +195,7 @@ while true; do
 			echo Autostart via .desktop file for GUI setup
                         break
 			;;
-                      [Nn]* ) 
+                      [HhNn]* ) 
                         # add pdp11 to the end of pi's .profile to let a new login 
                         # grab the terminal automatically
                         #   first, make backup .foo copy...
@@ -211,7 +211,7 @@ while true; do
 			echo autostart via .profile for headless use without GUI
                         break
 			;;
-                      * ) echo "Please answer Y or N.";;
+                      * ) echo "Please answer Y, H or N.";;
                     esac
             fi
             break
