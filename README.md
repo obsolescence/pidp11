@@ -1,7 +1,7 @@
 # Github repository for the PiDP-11 project
 
 Main web sites:
-- https://obsolescence.dev/pidp11 - Overview & context
+- https://obsolescence.dev/pdp11 - Overview & context
 - https://obsolescence.wixsite.com/obsolescence/pidp11 - Further details
 - https://groups.google.com/g/pidp-11 - User group
 
