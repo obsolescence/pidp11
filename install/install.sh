@@ -195,7 +195,7 @@ while true; do
 			echo Autostart via .desktop file for GUI setup
                         break
 			;;
-                      [Nn]* ) 
+                      [NnHh]* ) 
                         # add pdp11 to the end of pi's .profile to let a new login 
                         # grab the terminal automatically
                         #   first, make backup .foo copy...
