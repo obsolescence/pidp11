@@ -187,7 +187,7 @@ while true; do
                 echo
                 echo "Autostart the PDP-11 using the GUI(Y) or .profile (H)?"
                     read -p "-- Y recommended, H is for headless Pis without GUI:" yhn
-                case $prxn in
+                case $yhn in
                       [Yy]* ) 
                         mkdir -p ~/.config/autostart
                         cp /opt/pidp11/install/pdp11startup.desktop ~/.config/autostart
