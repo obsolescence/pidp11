@@ -98,7 +98,7 @@ done
 echo
 read -p "Configure PCAP permissions for current user? " prxn
 case $prxn in
-    [Yy[* ) 
+    [Yy]* ) 
 	    # Set permissions for client11 to be able to access the lobpcap interface in simh without sudo
 	    sudo setcap cap_net_raw,cap_net_admin=eip /opt/pidp11/src/02.3_simh/4.x+realcons/bin-rpi/pdp11_realcons
     [Nn]* ) 
