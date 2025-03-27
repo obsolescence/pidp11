@@ -396,18 +396,18 @@ done
 echo
 
 
-# 20241126 Add Johnny Bilquist's latest RSX-11MPlus with BQTC/IP
+# 20241126 Add Johnny Billquist's latest RSX-11MPlus with BQTC/IP
 # =============================================================================
 while true; do
     echo
-    read -p "2024: Add Johnny Bilquist's latest RSX-11MPlus with BQTC/IP? " prxn
+    read -p "2024: Add Johnny Billquist's latest RSX-11MPlus with BQTC/IP? " prxn
     case $prxn in
         [Yy]* ) 
             # Directory path
             dir="/opt/pidp11/systems/rsx11bq"
-            # Check if the directory for Johnny Bilquists RSX-11 already exists
+            # Check if the directory for Johnny Billquists RSX-11 already exists
             if [ -d "$dir" ]; then
-                echo "You already have the Bilquist RSX11BQ directory!"
+                echo "You already have the Billquist RSX11BQ directory!"
                 echo "Only the disk image in $dir will be updated."
             else
                 echo
