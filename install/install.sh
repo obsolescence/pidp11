@@ -104,7 +104,7 @@ case $prxn in
 	    ;;
     [Nn]* ) 
 	    echo Skipped setting client11 permissions - OK if already set, otherwise Ethernet will not work
-	    break
+            echo To set this at a later point in time run this command 'sudo setcap cap_net_raw,cap_net_admin=eip /opt/pidp11/src/02.3_simh/4.x+realcons/bin-rpi/pdp11_realcons'
 	    ;;
 	* ) echo "Please answer Y or N.";;
 esac
