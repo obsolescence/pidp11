@@ -61,7 +61,7 @@ while true; do
             echo Skipped the setting of access privileges.
 	    break
             ;;
-        * ) echo "Please answer yes or no.";;
+        * ) echo "Please answer Y or N.";;
     esac
 done
 
@@ -157,7 +157,7 @@ while true; do
             echo recompiled PiDP-11 binaries from source.
             break
 	    ;;
-        [Ss]* ) 
+        [SsnN]* ) 
             echo Skipped putting new binaries in place, things left untouched. 
             echo Rerun install if PiDP-11 does not work!
             break
@@ -201,46 +201,72 @@ while true; do
                 #echo please check that rpcbind is up:
                 #sudo systemctl status rpcbind
                 echo
-                echo
-                echo "Autostart the PDP-11 using the GUI(Y) or .profile (H)?"
-                    read -p "-- Y recommended, H is for headless Pis without GUI:" yhn
-                case $yhn in
-                      [Yy]* ) 
-                        mkdir -p ~/.config/autostart
-                        cp /opt/pidp11/install/pdp11startup.desktop ~/.config/autostart
-			echo
-			echo Autostart via .desktop file for GUI setup
-                        break
-			;;
-                      [NnHh]* ) 
-                        # add pdp11 to the end of pi's .profile to let a new login 
-                        # grab the terminal automatically
-                        #   first, make backup .foo copy...
-                        test ! -f $HOME/profile.foo && cp -p $HOME/.profile $HOME/profile.foo
-                        #   add the line to .profile if not there yet
-                        if grep -xq "pdp11 # autostart" $HOME/.profile
-                        then
-                            echo .profile already contains pdp11 for autostart, OK.
-                        else
-                            sed -e "\$apdp11 # autostart" -i $HOME/.profile
-                        fi
-			echo
-			echo autostart via .profile for headless use without GUI
-                        break
-			;;
-                      * ) echo "Please answer Y or N.";;
-                    esac
-            fi
+            fi       
             break
-	    ;;
-        [Nn]* ) 
-            echo Skipped software install
+			;;
+        [Nn] ) 
+            echo Skipped installing PiDP-11 package.
             break
-	    ;;
+            ;;
         * ) echo "Please answer Y or N.";;
     esac
 done
 
+if [ -f $HOME/pdp.sh ]; then  
+    
+    while true; do
+        read -p  "Autostart the PDP-11 using the GUI (Y/N) (use only on systems with GUI) ?" yn
+        echo
+        case $yn in
+            [Yy]* ) 
+                mkdir -p ~/.config/autostart
+                cp /opt/pidp11/install/pdp11startup.desktop ~/.config/autostart
+                echo
+                echo Added autostart via .desktop file for GUI access
+                break
+            ;;
+            [Nn]* ) 
+                echo Skipped adding GUI autostart.
+                break
+            ;;
+            * ) echo "Please answer Y or N.";;
+        esac
+    done
+    echo
+fi
+
+# Headless autostart
+# =============================================================================
+
+if [ -f $HOME/pdp.sh ]; then
+    while true; do
+    read -p "Autostart the PDP-11 using the .profile (Y/N) (for headless access) ?" yn
+    echo
+        case $yn in
+            [Yy]* ) 
+                # add pdp11 to the end of pi's .profile to let a new login 
+                # grab the terminal automatically
+                #   first, make backup .foo copy...
+                test ! -f $HOME/profile.foo && cp -p $HOME/.profile $HOME/profile.foo
+                #   add the line to .profile if not there yet
+                if grep -xq "pdp11 # autostart" $HOME/.profile
+                then
+                    echo .profile already contains pdp11 for autostart, OK.
+                else
+                    sed -e "\$apdp11 # autostart" -i $HOME/.profile
+                fi
+                echo Added autostart via .profile file for headless access
+                break
+            ;;
+            [Nn]* ) 
+                echo Skipped adding GUI autostart.
+                break
+            ;;
+            * ) echo "Please answer Y or N.";;
+        esac
+    done
+    echo
+fi
 
 # 20231218 - install all operating systems, if desired
 # =============================================================================
