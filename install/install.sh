@@ -2,7 +2,7 @@
 #
 #
 # install script for PiDP-11
-# v20241127
+# v20251125
 #
 #PATH=/usr/sbin:/usr/bin:/sbin:/bin
 
@@ -26,7 +26,7 @@ echo
 echo The script can be re-run at any time to change things. Re-running the install
 echo script and answering \'n\' to questions will leave those things unchanged.
 echo You can recompile from source, but it is easier to just install the precompiled
-echo binaries. 
+echo binaries.
 echo
 echo Too Long, Didn\'t Read?
 echo Just say Yes to everything.
@@ -43,7 +43,7 @@ while true; do
     case $yn in
         [Yy]* )
             # make sure that the directory does not have root ownership
-            # (in case the user did a simple git clone instead of 
+            # (in case the user did a simple git clone instead of
             #  sudo -u pi git clone...)
             myusername=$(whoami)
             mygroup=$(id -g -n)
@@ -57,7 +57,7 @@ while true; do
 	    echo Done.
 	    break
             ;;
-        [Nn]* ) 
+        [Nn]* )
             echo Skipped the setting of access privileges.
 	    break
             ;;
@@ -71,7 +71,7 @@ while true; do
     echo
     read -p "Install the required dependencies? " prxn
     case $prxn in
-        [Yy]* ) 
+        [Yy]* )
             sudo apt update
             #Install SDL2, optionally used for PDP-11 graphics terminal emulation
             sudo apt install -y libsdl2-dev
@@ -85,7 +85,7 @@ while true; do
             sudo apt install -y libtirpc-dev
             break
 	    ;;
-        [Nn]* ) 
+        [Nn]* )
             echo Skipped install of dependencies - OK if installed already
             break
 	    ;;
@@ -98,11 +98,11 @@ done
 echo
 read -p "Configure PCAP permissions for current user? " prxn
 case $prxn in
-    [Yy]* ) 
+    [Yy]* )
 	    # Set permissions for client11 to be able to access the lobpcap interface in simh without sudo
 	    sudo setcap cap_net_raw,cap_net_admin=eip /opt/pidp11/src/02.3_simh/4.x+realcons/bin-rpi/pdp11_realcons
 	    ;;
-    [Nn]* ) 
+    [Nn]* )
 	    echo Skipped setting client11 permissions - OK if already set, otherwise Ethernet will not work
 	    break
 	    ;;
@@ -118,7 +118,7 @@ while true; do
     echo
     read -p "(Y) to install precompiled binaries, or (C)ompile from source, or (S)kip? " prxn
     case $prxn in
-        [Yy]* ) 
+        [Yy]* )
             # Query the system architecture
             ARCH=$(dpkg-architecture --query DEB_HOST_ARCH)
             echo
@@ -142,11 +142,11 @@ while true; do
             sudo cp $pidpath/bin/$subdir/tek4010 $pidpath/bin/
             # to run a RT thread:
             sudo setcap cap_sys_nice+ep /opt/pidp11/src/11_pidp_server/pidp11/bin-rpi/pidp1170_blinkenlightd
-            echo 
+            echo
             echo Copied precompiled binaries into place.
             break
 	    ;;
-        [Cc]* ) 
+        [Cc]* )
             sudo rm $pidpath/src/02.3_simh/4.x+realcons/bin-rpi/pdp11_realcons
             sudo rm $pidpath/src/11_pidp_server/scanswitch/scansw
             sudo rm $pidpath/src/11_pidp_server/pidp11/bin-rpi/pidp1170_blinkenlightd
@@ -156,8 +156,8 @@ while true; do
             echo recompiled PiDP-11 binaries from source.
             break
 	    ;;
-        [Ss]* ) 
-            echo Skipped putting new binaries in place, things left untouched. 
+        [Ss]* )
+            echo Skipped putting new binaries in place, things left untouched.
             echo Rerun install if PiDP-11 does not work!
             break
 	    ;;
@@ -172,10 +172,10 @@ while true; do
     echo
     read -p "Install PiDP-11 package into OS? " prxn
     case $prxn in
-        [Yy]* ) 
-            # setup 'pdp.sh' (script to return to screen with pidp11) 
+        [Yy]* )
+            # setup 'pdp.sh' (script to return to screen with pidp11)
             # in home directory if it is not there yet
-            test ! -L /home/pi/pdp.sh && ln -s /opt/pidp11/etc/pdp.sh /home/pi/pdp.sh
+            test ! -L $HOME/pdp.sh && ln -s /opt/pidp11/etc/pdp.sh $HOME/pdp.sh
             # easier to use - just put a pdp11 command into /usr/local
             sudo ln -f -s /opt/pidp11/etc/pdp.sh /usr/local/bin/pdp11
             # the pdp11control script into /usr/local:
@@ -183,10 +183,10 @@ while true; do
 
             if [ "$ARCH" = "amd64" ]; then
                 echo skipping autostart and rpcbind, because this is not a Raspberry Pi
-                echo Not a problem: start manually by typing 
+                echo Not a problem: start manually by typing
                 echo pdp11control start x
                 echo ...where x is the OS number normally set on the front panel.
-                echo 
+                echo
                 echo Access the PDP-11 terminal by typing pdp11 afterwards.
                 echo
                 echo "But that is all in the manual..."
@@ -204,24 +204,24 @@ while true; do
                 echo "Autostart the PDP-11 using the GUI(Y) or .profile (H)?"
                     read -p "-- Y recommended, H is for headless Pis without GUI:" yhn
                 case $yhn in
-                      [Yy]* ) 
+                      [Yy]* )
                         mkdir -p ~/.config/autostart
                         cp /opt/pidp11/install/pdp11startup.desktop ~/.config/autostart
 			echo
 			echo Autostart via .desktop file for GUI setup
                         break
 			;;
-                      [NnHh]* ) 
-                        # add pdp11 to the end of pi's .profile to let a new login 
+                      [NnHh]* )
+                        # add pdp11 to the end of pi's .profile to let a new login
                         # grab the terminal automatically
                         #   first, make backup .foo copy...
-                        test ! -f /home/pi/profile.foo && cp -p /home/pi/.profile /home/pi/profile.foo
+                        test ! -f $HOME/profile.foo && cp -p $HOME/.profile $HOME/profile.foo
                         #   add the line to .profile if not there yet
-                        if grep -xq "pdp11 # autostart" /home/pi/.profile
+                        if grep -xq "pdp11 # autostart" $HOME/.profile
                         then
                             echo .profile already contains pdp11 for autostart, OK.
                         else
-                            sed -e "\$apdp11 # autostart" -i /home/pi/.profile
+                            sed -e "\$apdp11 # autostart" -i $HOME/.profile
                         fi
 			echo
 			echo autostart via .profile for headless use without GUI
@@ -232,7 +232,7 @@ while true; do
             fi
             break
 	    ;;
-        [Nn]* ) 
+        [Nn]* )
             echo Skipped software install
             break
 	    ;;
@@ -247,7 +247,7 @@ while true; do
     echo
     read -p "Download and install the PDP-11 operating systems? " prxn
     case $prxn in
-        [Yy]* ) 
+        [Yy]* )
             cd /opt/pidp11
             wget -O /opt/pidp11/systems.tar.gz http://pidp.net/pidp11/systems24.tar.gz
             echo "Decompressing... (might take a while)"
@@ -255,7 +255,7 @@ while true; do
             tar -xvf systems.tar
             break
 	    ;;
-        [Nn]* ) 
+        [Nn]* )
             echo PDP-11 operating systems not added at your request. You can do it later.
             break
 	    ;;
@@ -270,15 +270,15 @@ while true; do
     echo
     read -p "Add VT-52 desktop icon and desktop settings? " prxn
     case $prxn in
-        [Yy]* ) 
-            cp /opt/pidp11/install/vt52.desktop /home/pi/Desktop/
-            cp /opt/pidp11/install/vt52fullscreen.desktop /home/pi/Desktop/
-            cp /opt/pidp11/install/tty.desktop /home/pi/Desktop/
-            cp /opt/pidp11/install/tek.desktop /home/pi/Desktop/
-            cp /opt/pidp11/install/pdp11control.desktop /home/pi/Desktop/
+        [Yy]* )
+            cp /opt/pidp11/install/vt52.desktop $HOME/Desktop/
+            cp /opt/pidp11/install/vt52fullscreen.desktop $HOME/Desktop/
+            cp /opt/pidp11/install/tty.desktop $HOME/Desktop/
+            cp /opt/pidp11/install/tek.desktop $HOME/Desktop/
+            cp /opt/pidp11/install/pdp11control.desktop $HOME/Desktop/
 
             #make pcmanf run on double click, change its config file
-            config_file="/home/pi/.config/libfm/libfm.conf"
+            config_file="$HOME/.config/libfm/libfm.conf"
             # Create the directory if it doesn't exist
             mkdir -p "$(dirname "$config_file")"
             # Add or update the quick_exec setting
@@ -289,7 +289,7 @@ while true; do
                 echo ...Adding the config file, it does not exist yet
                 echo -e "[config]\nquick_exec=1" >> "$config_file"
             fi
-        
+
             # wallpaper
             echo $XDG_RUNTIME_DIR
             echo ==========================
@@ -307,7 +307,7 @@ while true; do
             break
 	    ;;
 
-        [Nn]* ) 
+        [Nn]* )
             echo Skipped. You can do it later by re-running this install script.
             break
 	    ;;
@@ -324,7 +324,7 @@ while true; do
     echo
     read -p "2024 update: Add Chase Covello's updated 2.11BSD ? " prxn
     case $prxn in
-        [Yy]* ) 
+        [Yy]* )
             # Directory path
             dir="/opt/pidp11/systems/211bsd+"
             echo
@@ -348,7 +348,7 @@ while true; do
             echo
             # --no-check-certificate because of unclear Encryption errors from github
             curl -L -o "${dir}/boot.ini" \
-            "https://raw.githubusercontent.com/chasecovello/211bsd-pidp11/refs/heads/master/boot.ini" 
+            "https://raw.githubusercontent.com/chasecovello/211bsd-pidp11/refs/heads/master/boot.ini"
             curl -L -o "${dir}/2.11BSD_rq.dsk.xz" \
             "https://github.com/chasecovello/211bsd-pidp11/raw/refs/heads/master/2.11BSD_rq.dsk.xz"
             echo
@@ -377,16 +377,16 @@ while true; do
             echo "...Adding boot option $new_line to selections menu"
             sh -c "{ cat \"$file\"; echo \"$new_line\"; } | sort | uniq > temp_file && mv temp_file \"$file\""
 
-            echo ...Done. 
+            echo ...Done.
 	    echo
 	    echo Reboot with SR switches set to 0211 to boot the new system.
-            echo Do not forget to visit github.com/chasecovello/211bsd-pidp11 
+            echo Do not forget to visit github.com/chasecovello/211bsd-pidp11
             echo to find out about all the good stuff on this update!
             echo
             break
 	    ;;
 
-        [Nn]* ) 
+        [Nn]* )
             echo Skipped. You can do it later by re-running this install script.
             break
 	    ;;
@@ -402,7 +402,7 @@ while true; do
     echo
     read -p "2024: Add Johnny Billquist's latest RSX-11MPlus with BQTC/IP? " prxn
     case $prxn in
-        [Yy]* ) 
+        [Yy]* )
             # Directory path
             dir="/opt/pidp11/systems/rsx11bq"
             # Check if the directory for Johnny Billquists RSX-11 already exists
@@ -435,7 +435,7 @@ while true; do
                 echo
                 echo Decompressing...
                 echo
-                gunzip -f "${file}" 
+                gunzip -f "${file}"
             done
 
             echo
@@ -455,14 +455,14 @@ while true; do
             sh -c "{ cat \"$file\"; echo \"$new_line\"; } | sort | uniq > temp_file && mv temp_file \"$file\""
 
             echo Done. Set SR switches to octal 2024 to boot this newly installed RSX.
-            echo    Do not forget to visit http://mim.stupi.net/pidp.htm 
+            echo    Do not forget to visit http://mim.stupi.net/pidp.htm
             echo    to find out about all the good stuff in this update!
             echo
 
             break
 	    ;;
 
-        [Nn]* ) 
+        [Nn]* )
             echo Skipped. You can do it later by re-running this install script.
             break
 	    ;;
@@ -472,4 +472,3 @@ done
 echo
 echo Done. Please do a sudo reboot and the front panel will come to life.
 echo Rerun this script if you want to do any install modifications.
-
