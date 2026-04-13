@@ -2,7 +2,7 @@
 #
 #
 # install script for PiDP-11
-# v20241127
+# v20251125
 #
 #PATH=/usr/sbin:/usr/bin:/sbin:/bin
 
@@ -61,7 +61,7 @@ while true; do
             echo Skipped the setting of access privileges.
 	    break
             ;;
-        * ) echo "Please answer yes or no.";;
+        * ) echo "Please answer Y or N.";;
     esac
 done
 
@@ -97,18 +97,19 @@ done
 
 echo
 read -p "Configure PCAP permissions for current user? " prxn
-case $prxn in
-    [Yy]* ) 
-	    # Set permissions for client11 to be able to access the lobpcap interface in simh without sudo
-	    sudo setcap cap_net_raw,cap_net_admin=eip /opt/pidp11/src/02.3_simh/4.x+realcons/bin-rpi/pdp11_realcons
-	    ;;
-    [Nn]* ) 
-	    echo Skipped setting client11 permissions - OK if already set, otherwise Ethernet will not work
-	    break
-	    ;;
-	* ) echo "Please answer Y or N.";;
-esac
-
+while true; do
+    case $prxn in
+        [Yy]* ) 
+            # Set permissions for client11 to be able to access the lobpcap interface in simh without sudo
+            sudo setcap cap_net_raw,cap_net_admin=eip /opt/pidp11/src/02.3_simh/4.x+realcons/bin-rpi/pdp11_realcons
+            ;;
+        [Nn]* ) 
+            echo Skipped setting client11 permissions - OK if already set, otherwise Ethernet will not work
+            break
+            ;;
+        * ) echo "Please answer Y or N.";;
+    esac
+done
 
 # Deal with user choice of precompiled 64/32 bit or compile from src
 # =============================================================================
@@ -156,7 +157,7 @@ while true; do
             echo recompiled PiDP-11 binaries from source.
             break
 	    ;;
-        [Ss]* ) 
+        [SsnN]* ) 
             echo Skipped putting new binaries in place, things left untouched. 
             echo Rerun install if PiDP-11 does not work!
             break
@@ -175,7 +176,7 @@ while true; do
         [Yy]* ) 
             # setup 'pdp.sh' (script to return to screen with pidp11) 
             # in home directory if it is not there yet
-            test ! -L /home/pi/pdp.sh && ln -s /opt/pidp11/etc/pdp.sh /home/pi/pdp.sh
+            test ! -L $HOME/pdp.sh && ln -s /opt/pidp11/etc/pdp.sh $HOME/pdp.sh
             # easier to use - just put a pdp11 command into /usr/local
             sudo ln -f -s /opt/pidp11/etc/pdp.sh /usr/local/bin/pdp11
             # the pdp11control script into /usr/local:
@@ -200,46 +201,72 @@ while true; do
                 #echo please check that rpcbind is up:
                 #sudo systemctl status rpcbind
                 echo
-                echo
-                echo "Autostart the PDP-11 using the GUI(Y) or .profile (H)?"
-                    read -p "-- Y recommended, H is for headless Pis without GUI:" yhn
-                case $yhn in
-                      [Yy]* ) 
-                        mkdir -p ~/.config/autostart
-                        cp /opt/pidp11/install/pdp11startup.desktop ~/.config/autostart
-			echo
-			echo Autostart via .desktop file for GUI setup
-                        break
-			;;
-                      [NnHh]* ) 
-                        # add pdp11 to the end of pi's .profile to let a new login 
-                        # grab the terminal automatically
-                        #   first, make backup .foo copy...
-                        test ! -f /home/pi/profile.foo && cp -p /home/pi/.profile /home/pi/profile.foo
-                        #   add the line to .profile if not there yet
-                        if grep -xq "pdp11 # autostart" /home/pi/.profile
-                        then
-                            echo .profile already contains pdp11 for autostart, OK.
-                        else
-                            sed -e "\$apdp11 # autostart" -i /home/pi/.profile
-                        fi
-			echo
-			echo autostart via .profile for headless use without GUI
-                        break
-			;;
-                      * ) echo "Please answer Y or N.";;
-                    esac
-            fi
+            fi       
             break
-	    ;;
-        [Nn]* ) 
-            echo Skipped software install
+			;;
+        [Nn] ) 
+            echo Skipped installing PiDP-11 package.
             break
-	    ;;
+            ;;
         * ) echo "Please answer Y or N.";;
     esac
 done
 
+if [ -f $HOME/pdp.sh ]; then  
+    
+    while true; do
+        read -p  "Autostart the PDP-11 using the GUI (Y/N) (use only on systems with GUI) ?" yn
+        echo
+        case $yn in
+            [Yy]* ) 
+                mkdir -p ~/.config/autostart
+                cp /opt/pidp11/install/pdp11startup.desktop ~/.config/autostart
+                echo
+                echo Added autostart via .desktop file for GUI access
+                break
+            ;;
+            [Nn]* ) 
+                echo Skipped adding GUI autostart.
+                break
+            ;;
+            * ) echo "Please answer Y or N.";;
+        esac
+    done
+    echo
+fi
+
+# Headless autostart
+# =============================================================================
+
+if [ -f $HOME/pdp.sh ]; then
+    while true; do
+    read -p "Autostart the PDP-11 using the .profile (Y/N) (for headless access) ?" yn
+    echo
+        case $yn in
+            [Yy]* ) 
+                # add pdp11 to the end of pi's .profile to let a new login 
+                # grab the terminal automatically
+                #   first, make backup .foo copy...
+                test ! -f $HOME/profile.foo && cp -p $HOME/.profile $HOME/profile.foo
+                #   add the line to .profile if not there yet
+                if grep -xq "pdp11 # autostart" $HOME/.profile
+                then
+                    echo .profile already contains pdp11 for autostart, OK.
+                else
+                    sed -e "\$apdp11 # autostart" -i $HOME/.profile
+                fi
+                echo Added autostart via .profile file for headless access
+                break
+            ;;
+            [Nn]* ) 
+                echo Skipped adding GUI autostart.
+                break
+            ;;
+            * ) echo "Please answer Y or N.";;
+        esac
+    done
+    echo
+fi
 
 # 20231218 - install all operating systems, if desired
 # =============================================================================
@@ -271,14 +298,14 @@ while true; do
     read -p "Add VT-52 desktop icon and desktop settings? " prxn
     case $prxn in
         [Yy]* ) 
-            cp /opt/pidp11/install/vt52.desktop /home/pi/Desktop/
-            cp /opt/pidp11/install/vt52fullscreen.desktop /home/pi/Desktop/
-            cp /opt/pidp11/install/tty.desktop /home/pi/Desktop/
-            cp /opt/pidp11/install/tek.desktop /home/pi/Desktop/
-            cp /opt/pidp11/install/pdp11control.desktop /home/pi/Desktop/
+            cp /opt/pidp11/install/vt52.desktop $HOME/Desktop/
+            cp /opt/pidp11/install/vt52fullscreen.desktop $HOME/Desktop/
+            cp /opt/pidp11/install/tty.desktop $HOME/Desktop/
+            cp /opt/pidp11/install/tek.desktop $HOME/Desktop/
+            cp /opt/pidp11/install/pdp11control.desktop $HOME/Desktop/
 
             #make pcmanf run on double click, change its config file
-            config_file="/home/pi/.config/libfm/libfm.conf"
+            config_file="$HOME/.config/libfm/libfm.conf"
             # Create the directory if it doesn't exist
             mkdir -p "$(dirname "$config_file")"
             # Add or update the quick_exec setting
@@ -472,4 +499,3 @@ done
 echo
 echo Done. Please do a sudo reboot and the front panel will come to life.
 echo Rerun this script if you want to do any install modifications.
-
