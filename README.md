@@ -21,6 +21,14 @@ This will run on any Pi, but without PiDP-11 front panel hardware, you'll have t
 
 This will ALSO run on any Linux laptop (command line only, no desktop features, tested on Ubuntu 24.04) and presumably, Windows 11 with WSL2 subsystem (although untested). Just in case you want to have a mobile PDP-11 or want to develop on the go.
 
+**Raspberry Pi 5 with 64-bit Raspberry Pi OS (aarch64):** The GPIO switch/lamp
+driver (`scansw`, `pidp1170_blinkenlightd`) supports the Pi 5's RP1 chip via
+`pinctrl/gpiochip_rp1.c`. On 64-bit OS, the drivers must be compiled from source
+(the install script handles this automatically). If you previously cloned the repo
+before December 2024 and have a stale 32-bit `scansw` binary in your working tree,
+delete it and run `make` in `src/11_pidp_server/scanswitch/` to rebuild for your
+architecture.
+
 # Move to Github & the previous install package
 
 We moved to Github only in December 2024, and this is still considered the new beta version. 

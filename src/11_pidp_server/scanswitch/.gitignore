@@ -1,0 +1,7 @@
+# Compiled output — not checked in; let 'make' build for the host architecture.
+# The pre-built armhf binary was removed in commit [fix/aarch64-scansw-binary]
+# because it prevented compilation on aarch64 (Pi 5 with 64-bit Raspberry Pi OS):
+# make saw the binary as up-to-date and skipped the source build, producing a
+# binary that crashes on arm64 with "Exec format error".
+# The source already supports Pi 5's RP1 chip via pinctrl/gpiochip_rp1.c.
+scansw
