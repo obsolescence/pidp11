@@ -569,12 +569,14 @@ const t_bool rtc_avail = TRUE;
 
 uint32 sim_os_msec (void)
 {
-struct timeval cur;
-struct timezone foo;
+// Monotonic, not wall-clock: REALCONS schedules the LED service off this value,
+// and a Pi with no RTC gets its time stepped by NTP after boot, which can stall
+// the LEDs. Monotonic time ignores that and starts near 0 at boot.
+struct timespec cur;
 uint32 msec;
 
-gettimeofday (&cur, &foo);
-msec = (((uint32) cur.tv_sec) * 1000) + (((uint32) cur.tv_usec) / 1000);
+clock_gettime (CLOCK_MONOTONIC, &cur);
+msec = (((uint32) cur.tv_sec) * 1000) + (((uint32) cur.tv_nsec) / 1000000);
 return msec;
 }
 

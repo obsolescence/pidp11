@@ -203,7 +203,7 @@ t_stat realcons_connect(realcons_t *_this, char *consolelogic_name, char *server
 
 	_this->force_output_update = 0;
 	_this->service_highspeed_prescaler = 0;
-	_this->service_next_time_msec = 0;
+	_this->service_next_time_msec = sim_os_msec(); // not 0: 0 breaks the signed compare once msec >= 2^31
 	_this->service_cycle_count = 0;
 	_this->lamp_test = 0;
 	for (i = 0; i < REALCONS_TIMER_COUNT; i++)
@@ -443,12 +443,16 @@ void realcons_service(realcons_t *_this, int highspeed)
 	// sample current time. can be used in console panel subclasses->service()
 	_this->service_cur_time_msec = sim_os_msec(); // get current time in millisec
 	// update general purpose timers.
+	// msec wraps every ~49.7 days, so subtract instead of using "<" (see below)
 	for (i = 0; i < REALCONS_TIMER_COUNT; i++)
 		if (_this->timer_running_msec[i]
-			&& _this->timer_running_msec[i] < _this->service_cur_time_msec)
+			&& (int32) ((uint32) _this->timer_running_msec[i] - (uint32) _this->service_cur_time_msec) < 0)
 			_this->timer_running_msec[i] = 0; // timer expired
 
-	if (_this->service_next_time_msec >= _this->service_cur_time_msec)
+	// The msec clock is 32 bits and wraps every ~49.7 days. If next lands near the top
+	// (I saw exactly UINT32_MAX) a plain ">=" is true until cur catches up ~49 days
+	// later, and the LEDs freeze. Signed subtraction handles the wrap correctly.
+	if ((int32) ((uint32) _this->service_cur_time_msec - (uint32) _this->service_next_time_msec) < 0)
 		return;
 	///// Time for next service operation /////
 
