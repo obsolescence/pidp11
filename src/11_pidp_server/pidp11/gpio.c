@@ -174,8 +174,15 @@ void *blink(int *terminate)
 			// each phase must be eact same duration, so include switch scanning here
 
 			// the original gpio_ledstatus[8] runs trough all phases
+
+			// safely grab the current page index
+			int idx;
+			pthread_mutex_lock(&gpiopattern_swap_lock);
+			idx = gpiopattern_ledstatus_phases_readidx;
+			pthread_mutex_unlock(&gpiopattern_swap_lock);
+
 			volatile uint32_t *gpio_ledstatus =
-					gpiopattern_ledstatus_phases[gpiopattern_ledstatus_phases_readidx][phase];
+					gpiopattern_ledstatus_phases[idx][phase];
 
 			// prepare for lighting LEDs by setting col pins to output
 			for (i = 0; i < 12; i++) {

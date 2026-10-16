@@ -27,6 +27,10 @@
 #define GPIOPATTERN_H_
 
 #include <stdint.h>
+#include <pthread.h>
+
+// protect the readidx/writeidx swap
+extern pthread_mutex_t gpiopattern_swap_lock;
 
 #include "blinkenlight_panels.h"
 

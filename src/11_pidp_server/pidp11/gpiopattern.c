@@ -92,6 +92,9 @@
 #include "rpc_blinkenlight_api.h"
 #include "gpiopattern.h"
 
+// single mutex protecting double-buffer index swap
+pthread_mutex_t gpiopattern_swap_lock = PTHREAD_MUTEX_INITIALIZER;
+
 // pointer into double buffer
 int gpiopattern_ledstatus_phases_readidx = 0; // read page, used by GPIO mux
 int gpiopattern_ledstatus_phases_writeidx = 1; // writepage page, written from Blinkenlight API
@@ -548,9 +551,11 @@ void *gpiopattern_update_leds(int *terminate)
 			}
 		}
 
-		// switch pages of double buffer
+		// switch pages of double buffer (atomic hand-off)
+		pthread_mutex_lock(&gpiopattern_swap_lock);
 		gpiopattern_ledstatus_phases_readidx = gpiopattern_ledstatus_phases_writeidx;
 		gpiopattern_ledstatus_phases_writeidx = !gpiopattern_ledstatus_phases_writeidx;
+		pthread_mutex_unlock(&gpiopattern_swap_lock);
 
 	} // while(! terminate)
 	return 0;
